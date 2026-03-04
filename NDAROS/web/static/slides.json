@@ -1,19 +1,10 @@
 {
     "slides": [
         {
-            "type": "text",
-            "title": "Accueil",
-            "content": "<h1>Bienvenue à NDAROS</h1><p>Détectez votre présence pour commencer...</p>"
-        },
-        {
-            "type": "video",
-            "src": "danse.mp4",
-            "title": "Présentation Danse"
-        },
-        {
-            "type": "video",
-            "src": "video.webm",
-            "title": "Vidéo Présentation"
+            "type": "image",
+            "src": "ndaros.png",
+            "title": "",
+            "fullscreen": true
         },
         {
             "type": "html",

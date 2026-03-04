@@ -41,14 +41,24 @@
             slidesData.slides.forEach((slide, index) => {
                 const section = document.createElement('section');
                 section.setAttribute('data-slide-index', index);
+                
+                if (slide.fullscreen) {
+                    section.setAttribute('data-fullscreen', 'true');
+                }
 
                 if (slide.type === 'image') {
-                    section.innerHTML = `
-                        <div class="slide-content">
-                            <img src="/static/assets/${slide.src}" alt="${slide.title}">
-                            ${slide.title ? `<h2>${slide.title}</h2>` : ''}
-                        </div>
-                    `;
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'slide-content';
+                    if (slide.fullscreen) {
+                        contentDiv.setAttribute('data-fullscreen', 'true');
+                    }
+                    
+                    const img = document.createElement('img');
+                    img.src = `/static/assets/${slide.src}`;
+                    img.alt = slide.title || '';
+                    contentDiv.appendChild(img);
+                    
+                    section.appendChild(contentDiv);
                 } else if (slide.type === 'video') {
                     section.innerHTML = `
                         <div class="slide-content">

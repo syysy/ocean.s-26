@@ -32,6 +32,54 @@ class Context:
 		self.flask_running = True
 		print("Flask server started")
 	
+	def _convert_pdf_to_images(self, pdf_assets_dir, png_assets_dir):
+		"""Convertir les PDFs en images PNG (première page uniquement)"""
+		try:
+			from pdf2image import convert_from_path
+			import os
+			
+			# Créer le dossier pour les PNGs s'il n'existe pas
+			if not os.path.exists(png_assets_dir):
+				os.makedirs(png_assets_dir)
+			
+			# Chercher tous les PDFs dans le dossier assets
+			if not os.path.exists(pdf_assets_dir):
+				print(f"PDF assets directory not found: {pdf_assets_dir}")
+				return
+			
+			pdf_files = [f for f in os.listdir(pdf_assets_dir) if f.endswith('.pdf')]
+			
+			if not pdf_files:
+				print(f"No PDF files found in {pdf_assets_dir}")
+				return
+			
+			for pdf_file in pdf_files:
+				pdf_path = os.path.join(pdf_assets_dir, pdf_file)
+				pdf_name = os.path.splitext(pdf_file)[0]
+				img_name = f"{pdf_name}.png"
+				img_path = os.path.join(png_assets_dir, img_name)
+				
+				# Vérifier si l'image existe déjà
+				if os.path.exists(img_path):
+					print(f"Image {img_name} already exists, skipping conversion")
+					continue
+				
+				print(f"Converting {pdf_file} to image...")
+				try:
+					# Convertir juste la première page
+					images = convert_from_path(pdf_path, dpi=150, first_page=1, last_page=1)
+					
+					if images:
+						images[0].save(img_path, 'PNG')
+						print(f"Saved {img_name}")
+				except Exception as e:
+					print(f"Error converting {pdf_file}: {e}")
+		except ImportError:
+			print("Warning: pdf2image not installed. Images from PDF won't be generated.")
+			print("Install with: pip install pdf2image pillow")
+		except Exception as e:
+			print(f"Error in PDF conversion: {e}")
+	
 	def _run_flask(self):
 		"""Exécute Flask (appelé dans un thread)"""
 		import sys
@@ -43,12 +91,19 @@ class Context:
 		template_dir = os.path.join(web_dir, 'templates')
 		static_dir = os.path.join(web_dir, 'static')
 		slides_path = os.path.join(static_dir, 'slides.json')
+		pdf_assets_dir = os.path.join(web_dir, 'assets')  # Où les PDFs sont stockés
+		png_assets_dir = os.path.join(static_dir, 'assets')  # Où les PNGs seront sauvegardés
 		
 		print(f"Flask config: web_dir={web_dir}")
 		print(f"Template dir: {template_dir}")
 		print(f"Static dir: {static_dir}")
 		print(f"Slides path: {slides_path}")
 		print(f"Slides file exists: {os.path.exists(slides_path)}")
+		print(f"PDF assets dir: {pdf_assets_dir}")
+		print(f"PNG assets dir: {png_assets_dir}")
+		
+		# Convertir les PDFs en images au démarrage
+		self._convert_pdf_to_images(pdf_assets_dir, png_assets_dir)
 		
 		app = Flask(__name__, 
 		           template_folder=template_dir,
