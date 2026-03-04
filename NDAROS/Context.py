@@ -1,6 +1,14 @@
 import serial
-import vlc
+import os
+import sys
 
+
+if sys.platform == 'win32':
+    vlc_dir = r'C:\Program Files\VideoLAN\VLC'
+    if os.path.exists(vlc_dir):
+        os.add_dll_directory(vlc_dir)
+
+import vlc
 from State import State, AlertState
 
 class Context:
