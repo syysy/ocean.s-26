@@ -1,5 +1,7 @@
 import serial
 import threading
+import time 
+import requests
 
 from State import State, AlertState
 
