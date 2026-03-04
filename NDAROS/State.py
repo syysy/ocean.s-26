@@ -15,7 +15,7 @@ class AlertState(State):
 				line = self.context.receive()
 				if line == "PRESENCE":	
 					# Affichage img1
-					self.context.displayVideo("video.webm")
+					self.context.displayVideo("danse.mp4")
 					self.context.changeState(PresentationState(self.context))
 					self.context.execute()
 
@@ -29,7 +29,8 @@ class PresentationState(State):
 				line = self.context.receive()
 				if line == "DEMARRAGE":	
 					# Affichage img2
-					self.context.displayVideo("danse.mp4")
+					self.context.stopVideo()
+					self.context.displayVideo("video.webm")
 					self.context.changeState(PresentationState(self.context))
 					self.context.execute()
      
@@ -38,6 +39,7 @@ class PipeState(State):
 		self.context = context
 
 	def execute(self):
+		self.context.stopVideo()
 		self.context.changeState(ReadyProductionState(self.context)) # 2 boutons préssés
 		self.context.execute()
 

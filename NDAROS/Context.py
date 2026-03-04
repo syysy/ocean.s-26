@@ -41,38 +41,68 @@ class Context:
 
 	def displayVideo(self, videoPath: str):
 		with self.videoLock:
-			if self.videoPlaying:
-				return
+			# Stop any existing video first
+			if self.player:
+				try:
+					self.player.set_fullscreen(False)
+					self.player.stop()
+					self.player.release()
+				except Exception as e:
+					print(f"Error stopping previous video: {e}")
+			self.player = None
 			self.videoPlaying = True
-			thread = threading.Thread(target=self._playVideo, args=(videoPath,), daemon=True)
-			thread.start()
+			
+		thread = threading.Thread(target=self._playVideo, args=(videoPath,), daemon=True)
+		thread.start()
 
 	def _playVideo(self, videoPath: str):
 		"""Runs in a separate thread."""
-		self.player = vlc.MediaPlayer(videoPath)
-		
-		events = self.player.event_manager()
-		events.event_attach(vlc.EventType.MediaPlayerEndReached, self._onVideoEnd)
-		events.event_attach(vlc.EventType.MediaPlayerStopped, self._onVideoEnd)
-		
-		self.player.play()
-		import time
-		time.sleep(0.3)
-		self.player.set_fullscreen(True)
+		try:
+			self.player = vlc.MediaPlayer(videoPath)
+			
+			# Attach events BEFORE playing
+			events = self.player.event_manager()
+			events.event_attach(vlc.EventType.MediaPlayerEndReached, self._onVideoEnd)
+			events.event_attach(vlc.EventType.MediaPlayerStopped, self._onVideoEnd)
+			
+			self.player.play()
+			import time
+			time.sleep(0.3)
+			
+			with self.videoLock:
+				if self.player:  # Check if video wasn't stopped
+					try:
+						self.player.set_fullscreen(True)
+					except Exception as e:
+						print(f"Error setting fullscreen: {e}")
+		except Exception as e:
+			print(f"Error playing video {videoPath}: {e}")
+			with self.videoLock:
+				self.videoPlaying = False
+				if self.player:
+					self.player = None
 
 	def _onVideoEnd(self, event):
 		with self.videoLock:
 			self.videoPlaying = False
 			if self.player:
-				self.player.release()
+				try:
+					self.player.set_fullscreen(False)
+					self.player.stop()
+					self.player.release()
+				except Exception as e:
+					print(f"Error releasing player on end: {e}")
 				self.player = None
 
 	def stopVideo(self):
 		with self.videoLock:
 			if self.player:
-				self.player.set_fullscreen(False)  # Exit fullscreen first
-				self.player.stop()
-				self.player.release()
+				try:
+					self.player.set_fullscreen(False)
+					self.player.stop()
+					self.player.release()
+				except Exception as e:
+					print(f"Error stopping video: {e}")
 				self.player = None
 			self.videoPlaying = False
 			
