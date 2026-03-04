@@ -86,6 +86,7 @@ class ProductionMangroveState(State):
 			if self.context.arduino.in_waiting > 0:
 				line = self.context.receive()
 				counter = int(line)
+				self.context.mangroveNumber = counter
 				if counter >= 3: # Supposons qu'il y a 3 mangroves à placer
 					# Attendre 5 minutes après que toutes les mangroves soient placées
 					time.sleep(300) # 5 minutes
