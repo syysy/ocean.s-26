@@ -10,8 +10,13 @@ class AlertState(State):
 		self.context = context
 
 	def execute(self):
-		self.context.changeState(PresentationState(self.context)) # personne présente
-		self.context.execute()
+		while True:
+			if self.context.arduino.in_waiting > 0:
+				line = self.context.arduino.readline().decode('utf-8').strip()
+				print(f"Received: {line}")
+				if line == "PRESENCE":	
+					self.context.changeState(PresentationState(self.context))
+					self.context.execute()
 
 class PresentationState(State):
 	def __init__(self, context):

@@ -3,6 +3,7 @@
 
 #define LED_PIN 13
 #define NUM_LEDS 26
+const int pinBouton = 8;
 
 
 CRGB leds[NUM_LEDS];
@@ -15,6 +16,9 @@ void setup() {
  FastLED.setBrightness(255);
  fill_solid(leds, NUM_LEDS, CRGB::Black);
  FastLED.show();
+
+
+ pinMode(pinBouton, INPUT_PULLUP); 
 
  delay(1000);
 }
@@ -47,5 +51,10 @@ void loop() {
       inputBuffer += c;
     }
   }
-  delay(10);
+
+  int etatBouton = digitalRead(pinBouton);
+
+  if (etatBouton == LOW) {
+    Serial.println("PRESENCE");
+  }
 }

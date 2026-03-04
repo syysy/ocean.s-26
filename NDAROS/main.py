@@ -3,32 +3,42 @@ import time
 import sys
 import vlc
 
+from Context import Context
+from State import State, AlertState, PresentationState, PipeState, ReadyProductionState, ProductionState, PopupMangroveState, ProductionMangroveState
+
 PORT = '/dev/ttyACM0'
 BAUD = 9600
 TIMEOUT = 1
 
 try:
 	arduino = serial.Serial(port=PORT, baudrate=BAUD, timeout=TIMEOUT)
-	time.sleep(2)
 except Exception as e:
 	print(f"Error opening serial port {PORT}: {e}", file=sys.stderr)
 	sys.exit(1)
 
 
 def main():
-	player = vlc.MediaPlayer("video.webm")
-	time.sleep(1)
-	player.play()
-	player.set_fullscreen(True)
-	
-	while True:
-		arduino.write(f"LED\n".encode('utf-8'))
-		time.sleep(10)
+	try:
+		context = Context(arduino)
+		context.execute()
 
-		if arduino.in_waiting > 0:
-			line = arduino.readline().decode('utf-8').strip()
-			print(f"Received: {line}")
+		'''player = vlc.MediaPlayer("video.webm")
+		time.sleep(1)
+		player.play()
+		player.set_fullscreen(True)'''
 		
-	arduino.close()
+		while True:
+			arduino.write(f"LED\n".encode('utf-8'))
 
-main()
+			if arduino.in_waiting > 0:
+				line = arduino.readline().decode('utf-8').strip()
+				print(f"Received: {line}")
+
+		arduino.close()
+
+	except KeyboardInterrupt:
+		arduino.close()
+		sys.exit(0)
+
+if __name__ == "__main__":
+    main()

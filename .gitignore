@@ -1,1 +1,2 @@
 *.nix
+__pycache__/
