@@ -14,6 +14,8 @@ class AlertState(State):
 			if self.context.arduino.in_waiting > 0:
 				line = self.context.receive()
 				if line == "PRESENCE":	
+					# Affichage img1
+					self.context.displayVideo("video.webm")
 					self.context.changeState(PresentationState(self.context))
 					self.context.execute()
 
@@ -22,9 +24,15 @@ class PresentationState(State):
 		self.context = context
 
 	def execute(self):
-		self.context.changeState(PipeState(self.context)) # 1 bouton préssé
-		self.context.execute()
-
+		while True:
+			if self.context.arduino.in_waiting > 0:
+				line = self.context.receive()
+				if line == "DEMARRAGE":	
+					# Affichage img2
+					self.context.displayVideo("danse.mp4")
+					self.context.changeState(PresentationState(self.context))
+					self.context.execute()
+     
 class PipeState(State):
 	def __init__(self, context):
 		self.context = context

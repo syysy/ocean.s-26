@@ -25,7 +25,7 @@ class Context:
 		print(f"\033[91mChanging State to: {state.__class__.__name__}\033[0m")
 		self.state = state
 
-	def receive():
+	def receive(self):
 		if self.arduino.in_waiting > 0:
 			line = self.arduino.readline().decode('utf-8').strip()
 			print(f"Received: {line}")
