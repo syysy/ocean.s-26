@@ -1,0 +1,54 @@
+{
+    "slides": [
+        {
+            "type": "text",
+            "title": "Accueil",
+            "content": "<h1>Bienvenue à NDAROS</h1><p>Détectez votre présence pour commencer...</p>"
+        },
+        {
+            "type": "video",
+            "src": "danse.mp4",
+            "title": "Présentation Danse"
+        },
+        {
+            "type": "video",
+            "src": "video.webm",
+            "title": "Vidéo Présentation"
+        },
+        {
+            "type": "html",
+            "title": "Sélection des écosystèmes",
+            "html": "<div class='slide-content'><h2>Choisissez vos écosystèmes</h2><div class='buttons-grid'><button class='eco-btn ocean'>🌊 Océan</button><button class='eco-btn river'>🏞️ Rivière</button><button class='eco-btn power'>⚡ Centrale</button></div></div>"
+        },
+        {
+            "type": "text",
+            "title": "Production en cours",
+            "content": "<h2>Production de mangroves</h2><p>Appuyez sur le bouton central pour commencer...</p>"
+        },
+        {
+            "type": "text",
+            "title": "En attente de validation",
+            "content": "<h2>Prêt à produire?</h2><p>Appuyez sur le bouton central pour valider</p>"
+        },
+        {
+            "type": "text",
+            "title": "Production active",
+            "content": "<h2>Production active</h2><p>Mangroves en cours de génération...</p>"
+        },
+        {
+            "type": "text",
+            "title": "Placement des mangroves",
+            "content": "<h2>Placez vos mangroves</h2><p>Positionnez les plantes dans l'écosystème</p>"
+        },
+        {
+            "type": "text",
+            "title": "Écosystème en développement",
+            "content": "<h2>Votre écosystème pousse</h2><p>Les mangroves se développent...</p>"
+        },
+        {
+            "type": "text",
+            "title": "Fin",
+            "content": "<h1>Merci!</h1><p>Écosystème complété avec succès</p>"
+        }
+    ]
+}

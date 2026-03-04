@@ -1,0 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.reveal {
+    width: 100%;
+    height: 100%;
+}
+
+.reveal section {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d3436 100%);
+    color: #fff;
+    padding: 40px;
+}
+
+.slide-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    text-align: center;
+}
+
+.reveal img {
+    max-width: 85%;
+    max-height: 75%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.reveal video {
+    max-width: 85%;
+    max-height: 75%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    background: #000;
+}
+
+.reveal h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.reveal h2 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.reveal p {
+    font-size: 1.8rem;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+/* Buttons Grid pour sélection écosystème */
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.eco-btn {
+    padding: 30px;
+    font-size: 1.5rem;
+    border: 3px solid #fff;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.eco-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.eco-btn.ocean {
+    border-color: #00bfff;
+    color: #00bfff;
+}
+
+.eco-btn.river {
+    border-color: #32cd32;
+    color: #32cd32;
+}
+
+.eco-btn.power {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-content {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Masquer les contrôles Reveal.js */
+.reveal .controls {
+    display: none;
+}
+
+.reveal .progress {
+    display: none;
+}
+
+/* Fullscreen */
+:fullscreen .reveal {
+    width: 100vw;
+    height: 100vh;
+}
