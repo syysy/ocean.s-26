@@ -1,8 +1,5 @@
 import serial
 import threading
-import requests
-import subprocess
-import time
 
 from State import State, AlertState
 

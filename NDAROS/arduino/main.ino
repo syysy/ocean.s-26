@@ -63,6 +63,10 @@ void loop() {
       inputBuffer.trim();
       if (inputBuffer == "LED") {
         led();
+      } else if (inputBuffer == "compteurAimants") {
+        int count = compteurAimants();
+        // envoyer le résultat au PC
+        Serial.println(count);
       }
       inputBuffer = "";
     } else if (c != '\r') {

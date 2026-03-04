@@ -10,7 +10,12 @@ import os
 from Context import Context
 from State import AlertState
 
-PORT = '/dev/ttyACM0'
+# Détécter le système d'exploitation pour le port série
+PORT = None
+if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+	PORT = '/dev/ttyACM0'
+elif sys.platform == 'win32':
+	PORT = 'COM5'
 BAUD = 9600
 TIMEOUT = 1
 

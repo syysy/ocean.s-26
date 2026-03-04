@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import time
+import time
 
 class State(ABC):
 	@abstractmethod
@@ -86,19 +87,10 @@ class PopupMangroveState(State):
 class ProductionMangroveState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(8)  # Affichage production mangrove
-		self.start_time = time.time()
-		self.mangroves_placed = 1
 
-	def handle_input(self, message: str):
-		if message == "MANGROVE_PLACED":
-			self.mangroves_placed += 1
-		
-		# Attendre 5 min après que toutes mangroves soient placées
-		if self.mangroves_placed >= 3 and time.time() - self.start_time > 300:
-			self.context.displaySlide(9)  # Fin
-			return CleanState(self.context)
-		return None
+	def execute(self):
+		self.context.changeState(CleanState(self.context)) # 5 min de délai après que toutes les mangroves aient été placées
+		self.context.execute()
 
 class CleanState(State):
 	def __init__(self, context):
