@@ -5,6 +5,10 @@
 #define NUM_LEDS 26
 const int pinBouton = 8;
 
+const int pinCapteurAimant1 = 2;
+const int pinCapteurAimant2 = 3;
+const int pinCapteurAimant3 = 4;
+
 
 CRGB leds[NUM_LEDS];
 String inputBuffer = "";
@@ -17,6 +21,9 @@ void setup() {
  fill_solid(leds, NUM_LEDS, CRGB::Black);
  FastLED.show();
 
+  pinMode(pinCapteurAimant1, INPUT_PULLUP);
+  pinMode(pinCapteurAimant2, INPUT_PULLUP);
+  pinMode(pinCapteurAimant3, INPUT_PULLUP);
 
  pinMode(pinBouton, INPUT_PULLUP); 
 
@@ -34,6 +41,17 @@ void led() {
     FastLED.show();
     delay(150);
   }
+}
+
+// Fonction pour compter le nombre de capteurs d'aimant activés
+int compteurAimants() {
+  int compteur = 0;
+
+  if (digitalRead(pinCapteurAimant1) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant2) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant3) == LOW) compteur++;
+
+  return compteur;
 }
 
 void loop() {
