@@ -44,16 +44,21 @@ class Context:
 			if self.videoPlaying:
 				return
 			self.videoPlaying = True
-			self.player = vlc.MediaPlayer(videoPath)
-			
-			events = self.player.event_manager()
-			events.event_attach(vlc.EventType.MediaPlayerEndReached, self._onVideoEnd)
-			events.event_attach(vlc.EventType.MediaPlayerStopped, self._onVideoEnd)
-			
-			self.player.play()
-			import time
-			time.sleep(0.3)
-			self.player.set_fullscreen(True)
+			thread = threading.Thread(target=self._playVideo, args=(videoPath,), daemon=True)
+			thread.start()
+
+	def _playVideo(self, videoPath: str):
+		"""Runs in a separate thread."""
+		self.player = vlc.MediaPlayer(videoPath)
+		
+		events = self.player.event_manager()
+		events.event_attach(vlc.EventType.MediaPlayerEndReached, self._onVideoEnd)
+		events.event_attach(vlc.EventType.MediaPlayerStopped, self._onVideoEnd)
+		
+		self.player.play()
+		import time
+		time.sleep(0.3)
+		self.player.set_fullscreen(True)
 
 	def _onVideoEnd(self, event):
 		with self.videoLock:
@@ -65,6 +70,7 @@ class Context:
 	def stopVideo(self):
 		with self.videoLock:
 			if self.player:
+				self.player.set_fullscreen(False)  # Exit fullscreen first
 				self.player.stop()
 				self.player.release()
 				self.player = None
