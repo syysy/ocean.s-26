@@ -1,4 +1,5 @@
 import serial
+import vlc
 
 from State import State, AlertState
 
@@ -32,6 +33,11 @@ class Context:
 
 	def send(self, message: str):
 		self.arduino.write(f"{message}\n".encode('utf-8'))
+
+	def displayVideo(self, videoPath: str):
+		player = vlc.MediaPlayer(videoPath)
+		player.play()
+		player.set_fullscreen(True)
 		
 	def execute(self):
 		print(f"\033[91mCurrent State: {self.state.__class__.__name__}\033[0m")

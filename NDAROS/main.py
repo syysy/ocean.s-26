@@ -1,7 +1,6 @@
 import serial
 import time
 import sys
-import vlc
 import atexit
 import signal
 
@@ -47,11 +46,6 @@ def main():
 		arduino = connect_arduino()
 		context = Context(arduino)
 		context.execute()
-
-		'''player = vlc.MediaPlayer("video.webm")
-		time.sleep(1)
-		player.play()
-		player.set_fullscreen(True)'''
 
 		context.send("LED")
 
