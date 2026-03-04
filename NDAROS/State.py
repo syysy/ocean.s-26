@@ -82,10 +82,15 @@ class PopupMangroveState(State):
 		self.context.displaySlide(7)  # Placement mangrove
 
 	def handle_input(self, message: str):
-		if message == "MANGROVE_PLACED":
-			self.context.displaySlide(8)  # Production mangrove
-			return ProductionMangroveState(self.context)
-		return None
+		while True:
+			self.context.send("compteurAimants\n")
+			if self.context.arduino.in_waiting > 0:
+				line = self.context.receive()
+				counter = int(line)
+				self.context.mangroveNumber = counter
+				if counter > 0:
+					self.context.displaySlide(8)  # Production mangrove
+					return ProductionMangroveState(self.context)
 
 class ProductionMangroveState(State):
 	def __init__(self, context):

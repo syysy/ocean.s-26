@@ -1,10 +1,24 @@
 #include <FastLED.h>
 
-
 #define RIVER 13
 #define RIVER_NUM_LEDS 20
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 20
+#define PIPE_RIVER 8
+#define PIPE_RIVER_NUM_LEDS 20
+#define PIPE_OCEAN 7
+#define PIPE_OCEAN_NUM_LEDS 20
+
+// OCEAN COLORS
+#define OCEAN_COLOR CRGB::Red
+#define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
+#define OCEAN_COLOR_FINAL CRGB(77, 255, 255)
+
+// RIVER COLORS
+#define RIVER_COLOR CRGB::Red
+#define RIVER_HIGHLIGHT CRGB(255, 255, 255)
+#define RIVER_COLOR_FINAL CRGB(0, 42, 255)
+
 const int pinBouton = 8;
 
 const int pinCapteurAimant1 = 2;
@@ -14,49 +28,81 @@ const int pinCapteurAimant3 = 4;
 
 CRGB river_leds[RIVER_NUM_LEDS];
 CRGB ocean_leds[OCEAN_NUM_LEDS];
+CRGB pipe_river_leds[PIPE_RIVER_NUM_LEDS];
+CRGB pipe_ocean_leds[PIPE_OCEAN_NUM_LEDS];
 String inputBuffer = "";
 
-/*void pipeRiver() {
-  for (unsigned int i = 0; i < 10000; i++) {
-    fill_solid(leds, RIVER_NUM_LEDS, CRGB(0,42,255));
+void pipeRiver() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = RIVER_COLOR;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR);
 
     static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % RIVER_NUM_LEDS;
-    river_leds[firstOffset] = CRGB(77,255,255);
+    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
+    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
     FastLED.show();
     delay(150);
   }
 }
 
 void pipeOcean() {
-  for (unsigned int i = 0; i < 10000; i++) {
-    fill_solid(leds, NUM_LEDS, CRGB(77,255,255));
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = OCEAN_COLOR;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR);
 
     static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % NUM_LEDS;
-    ocean_leds[firstOffset] = CRGB(255,255,255);
+    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
+    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
     FastLED.show();
     delay(150);
   }
-}*/
-
-void riverLedInit() {
-  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB(255,255,255));
-  FastLED.show();
 }
 
-void oceanLedInit() {
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB(255,255,255));
-  FastLED.show();
+void pipeRiverFinal() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = RIVER_COLOR_FINAL;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
+
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
+    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
+}
+
+void pipeOceanFinal() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = OCEAN_COLOR_FINAL;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
+
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
+    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
 }
 
 void riverLedFinal() {
-  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
+  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
   FastLED.show();
 }
 
 void oceanLedFinal() {
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
   FastLED.show();
 }
 
@@ -77,8 +123,11 @@ void setup() {
   FastLED.addLeds<WS2812B, OCEAN, GRB>(ocean_leds, OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
-  riverLedInit();
-  oceanLedInit();
+  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR);
+  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
+  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
+  FastLED.show();
 
   pinMode(pinCapteurAimant1, INPUT_PULLUP);
   pinMode(pinCapteurAimant2, INPUT_PULLUP);
@@ -93,7 +142,8 @@ void loop() {
   FastLED.show();
 
   delay(2000);
-  
+  riverLedFinal();
+  oceanLedFinal();
 
   while (Serial.available()) {
     char c = (char)Serial.read();
@@ -102,9 +152,15 @@ void loop() {
       if (inputBuffer == "SEPARATION") {
         riverLedFinal();
         oceanLedFinal();
+        pipeRiverFinal();
+        pipeOceanFinal();
       } else if (inputBuffer == "compteurAimants") {
         int count = compteurAimants();
         Serial.println(count);
+      } else if (inputBuffer == "PIPE_OCEAN") {
+        pipeOcean();
+      } else if (inputBuffer == "PIPE_RIVER") {
+        pipeRiver();
       }
       inputBuffer = "";
     } else if (c != '\r') {
