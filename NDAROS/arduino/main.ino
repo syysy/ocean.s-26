@@ -44,7 +44,7 @@ void led() {
 }
 
 // Fonction pour compter le nombre de capteurs d'aimant activés
-int nb_aimant() {
+int compteurAimants() {
   int compteur = 0;
 
   if (digitalRead(pinCapteurAimant1) == LOW) compteur++;
