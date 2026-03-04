@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDAROS - Présentation Interactive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides" id="slides-container">
+            <!-- Les slides seront générées ici par JavaScript -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script>
+        let reveal;
+        let slidesData = [];
+
+        // Charger les slides depuis l'API
+        async function loadSlides() {
+            try {
+                const response = await fetch('/api/slides');
+                slidesData = await response.json();
+                renderSlides();
+                initReveal();
+            } catch (error) {
+                console.error('Error loading slides:', error);
+            }
+        }
+
+        // Générer les HTML pour les slides
+        function renderSlides() {
+            const container = document.getElementById('slides-container');
+            container.innerHTML = '';
+
+            slidesData.slides.forEach((slide, index) => {
+                const section = document.createElement('section');
+                section.setAttribute('data-slide-index', index);
+
+                if (slide.type === 'image') {
+                    section.innerHTML = `
+                        <div class="slide-content">
+                            <img src="/static/assets/${slide.src}" alt="${slide.title}">
+                            ${slide.title ? `<h2>${slide.title}</h2>` : ''}
+                        </div>
+                    `;
+                } else if (slide.type === 'video') {
+                    section.innerHTML = `
+                        <div class="slide-content">
+                            <video controls autoplay muted>
+                                <source src="/static/assets/${slide.src}" type="video/mp4">
+                                Votre navigateur ne supporte pas la vidéo.
+                            </video>
+                            ${slide.title ? `<h2>${slide.title}</h2>` : ''}
+                        </div>
+                    `;
+                } else if (slide.type === 'text') {
+                    section.innerHTML = `
+                        <div class="slide-content">
+                            ${slide.content}
+                        </div>
+                    `;
+                } else if (slide.type === 'html') {
+                    section.innerHTML = slide.html;
+                }
+
+                container.appendChild(section);
+            });
+        }
+
+        // Initialiser Reveal.js
+        function initReveal() {
+            reveal = new Reveal({
+                hash: true,
+                width: 1920,
+                height: 1080,
+                margin: 0,
+                minScale: 1,
+                maxScale: 1,
+                transition: 'slide',
+                transitionSpeed: 'default',
+                keyboard: false,
+                touch: false,
+                overview: false,
+                center: true,
+            });
+
+            reveal.initialize();
+
+            // Écouter les changements depuis les API
+            setInterval(updateSlideFromAPI, 500);
+        }
+
+        // Mettre à jour la slide depuis l'API
+        async function updateSlideFromAPI() {
+            try {
+                const response = await fetch('/api/current-slide');
+                const data = await response.json();
+                const currentIndex = reveal.getState().indexh || 0;
+                
+                if (data.slide !== currentIndex) {
+                    reveal.slide(data.slide);
+                }
+            } catch (error) {
+                // Ignorer les erreurs de temps en temps
+            }
+        }
+
+        // Charger les slides au démarrage
+        document.addEventListener('DOMContentLoaded', loadSlides);
+
+        // Garder le fullscreen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+            }
+            if (e.key === 'F') {
+                document.documentElement.requestFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
