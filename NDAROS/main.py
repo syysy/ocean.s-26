@@ -7,7 +7,12 @@ import signal
 from Context import Context
 from State import State, AlertState, PresentationState, PipeState, ReadyProductionState, ProductionState, PopupMangroveState, ProductionMangroveState
 
-PORT = '/dev/ttyACM0'
+# Détécter le système d'exploitation pour le port série
+PORT = None
+if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+	PORT = '/dev/ttyACM0'
+elif sys.platform == 'win32':
+	PORT = 'COM5'
 BAUD = 9600
 TIMEOUT = 1
 
