@@ -28,16 +28,23 @@ atexit.register(cleanup)
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-try:
-	arduino = serial.Serial(port=PORT, baudrate=BAUD, timeout=TIMEOUT)
-	time.sleep(2)
-except Exception as e:
-	print(f"Error opening serial port {PORT}: {e}", file=sys.stderr)
-	sys.exit(1)
-
+def connect_arduino(port=PORT, baud=BAUD, timeout=TIMEOUT, retries=5):
+    for attempt in range(retries):
+        try:
+            arduino = serial.Serial(port=port, baudrate=baud, timeout=timeout)
+            time.sleep(2)  # Wait for Arduino to initialize
+            return arduino
+        except Exception as e:
+            if attempt < retries - 1:
+                print(f"Connection failed (attempt {attempt+1}/{retries}), retrying in 2s...", file=sys.stderr)
+                time.sleep(2)
+            else:
+                print(f"Error opening serial port {port}: {e}", file=sys.stderr)
+                sys.exit(1)
 
 def main():
 	try:
+		arduino = connect_arduino()
 		context = Context(arduino)
 		context.execute()
 
