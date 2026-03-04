@@ -23,7 +23,16 @@ class Context:
 	def changeState(self, state: State):
 		print(f"\033[91mChanging State to: {state.__class__.__name__}\033[0m")
 		self.state = state
-	
+
+	def receive():
+		if self.arduino.in_waiting > 0:
+			line = self.arduino.readline().decode('utf-8').strip()
+			print(f"Received: {line}")
+		return line
+
+	def send(self, message: str):
+		self.arduino.write(f"{message}\n".encode('utf-8'))
+		
 	def execute(self):
 		print(f"\033[91mCurrent State: {self.state.__class__.__name__}\033[0m")
 		self.state.execute()
