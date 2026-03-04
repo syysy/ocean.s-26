@@ -12,8 +12,7 @@ class AlertState(State):
 	def execute(self):
 		while True:
 			if self.context.arduino.in_waiting > 0:
-				line = self.context.arduino.readline().decode('utf-8').strip()
-				print(f"Received: {line}")
+				line = self.context.receive()
 				if line == "PRESENCE":	
 					self.context.changeState(PresentationState(self.context))
 					self.context.execute()

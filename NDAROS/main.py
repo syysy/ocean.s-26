@@ -45,13 +45,8 @@ def main():
 		time.sleep(1)
 		player.play()
 		player.set_fullscreen(True)'''
-		
-		while True:
-			arduino.write(f"LED\n".encode('utf-8'))
 
-			if arduino.in_waiting > 0:
-				line = arduino.readline().decode('utf-8').strip()
-				print(f"Received: {line}")
+		context.send("LED")
 
 	except KeyboardInterrupt:
 		pass
