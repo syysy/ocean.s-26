@@ -1,2 +1,5 @@
 *.nix
 __pycache__/
+
+NDAROS/requirements.txt
+.venv/
