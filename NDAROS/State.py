@@ -1,119 +1,176 @@
-from abc import ABC, abstractmethod
-import time
-import time
+#include <FastLED.h>
 
-class State(ABC):
-	@abstractmethod
-	def handle_input(self, message: str):
-		"""Handle message from Arduino and return next state or None"""
-		pass
+#define RIVER 13
+#define RIVER_NUM_LEDS 20
+#define OCEAN 12
+#define OCEAN_NUM_LEDS 20
+#define PIPE_RIVER 8
+#define PIPE_RIVER_NUM_LEDS 20
+#define PIPE_OCEAN 7
+#define PIPE_OCEAN_NUM_LEDS 20
 
-class AlertState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(0)  # Affichage slide accueil
+// OCEAN COLORS
+#define OCEAN_COLOR CRGB::Red
+#define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
+#define OCEAN_COLOR_FINAL CRGB(77, 255, 255)
 
-	def handle_input(self, message: str):
-		if message == "PRESENCE":
-			self.context.displaySlide(1)  # Affichage danse video
-			return PresentationState(self.context)
-		return None
+// RIVER COLORS
+#define RIVER_COLOR CRGB::Red
+#define RIVER_HIGHLIGHT CRGB(255, 255, 255)
+#define RIVER_COLOR_FINAL CRGB(0, 42, 255)
 
-class PresentationState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(2)  # Video présentation
+const int pinBouton = 8;
 
-	def handle_input(self, message: str):
-		if message == "DEMARRAGE":
-			self.context.displaySlide(3)  # Boutons sélection
-			return PipeState(self.context)
-		return None
+const int pinCapteurAimant1 = 2;
+const int pinCapteurAimant2 = 3;
+const int pinCapteurAimant3 = 4;
 
-class PipeState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(3)  # Affiche les 3 options
-		self.start_time = time.time()
 
-	def handle_input(self, message: str):
-		# Attendre que 2 boutons soient pressés
-		if message == "OCEAN_RIVER":
-			self.context.displaySlide(4)  # Transition production
-			return ReadyProductionState(self.context)
-		elif message == "OCEAN_POWER":
-			self.context.displaySlide(4)
-			return ReadyProductionState(self.context)
-		elif message == "RIVER_POWER":
-			self.context.displaySlide(4)
-			return ReadyProductionState(self.context)
-		return None
+CRGB river_leds[RIVER_NUM_LEDS];
+CRGB ocean_leds[OCEAN_NUM_LEDS];
+CRGB pipe_river_leds[PIPE_RIVER_NUM_LEDS];
+CRGB pipe_ocean_leds[PIPE_OCEAN_NUM_LEDS];
+String inputBuffer = "";
 
-class ReadyProductionState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(5)  # En attente du bouton central
+void pipeRiver() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = RIVER_COLOR;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR);
 
-	def handle_input(self, message: str):
-		if message == "CENTER_BUTTON":
-			self.context.displaySlide(6)  # Production lancée
-			return ProductionState(self.context)
-		return None
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
+    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
+}
 
-class ProductionState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(6)  # Production
-		self.start_time = time.time()
+void pipeOcean() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = OCEAN_COLOR;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR);
 
-	def handle_input(self, message: str):
-		# Attendre 1 minute avant popup mangrove
-		if time.time() - self.start_time > 60:
-			self.context.displaySlide(7)  # Popup mangrove
-			return PopupMangroveState(self.context)
-		return None
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
+    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
+}
 
-class PopupMangroveState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(7)  # Placement mangrove
+void pipeRiverFinal() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = RIVER_COLOR_FINAL;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
 
-	def handle_input(self, message: str):
-		while True:
-			self.context.send("compteurAimants\n")
-			if self.context.arduino.in_waiting > 0:
-				line = self.context.receive()
-				counter = int(line)
-				self.context.mangroveNumber = counter
-				if counter > 0:
-					self.context.displaySlide(8)  # Production mangrove
-					return ProductionMangroveState(self.context)
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
+    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
+}
 
-class ProductionMangroveState(State):
-	def __init__(self, context):
-		self.context = context
+void pipeOceanFinal() {
+  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
+    pipe_river_leds[i] = OCEAN_COLOR_FINAL;
+    FastLED.show();
+  }
+  while (1) {
+    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
 
-	def execute(self):
-		while True:
-			self.context.send("compteurAimants\n")
-			if self.context.arduino.in_waiting > 0:
-				line = self.context.receive()
-				counter = int(line)
-				self.context.mangroveNumber = counter
-				if counter >= 3: # Supposons qu'il y a 3 mangroves à placer
-					self.context.displaySlide(9)
-					# Attendre 5 minutes après que toutes les mangroves soient placées
-					time.sleep(300) # 5 minutes
-					return CleanState(self.context)
+    static int firstOffset = 0;
+    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
+    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
+    FastLED.show();
+    delay(150);
+  }
+}
 
-class CleanState(State):
-	def __init__(self, context):
-		self.context = context
-		self.context.displaySlide(10)  # Remerciements
-		self.start_time = time.time()
+void riverLedFinal() {
+  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
+  FastLED.show();
+}
 
-	def handle_input(self, message: str):
-		# Après 5 secondes, revenir à l'accueil
-		if time.time() - self.start_time > 5:
-			return AlertState(self.context)
-		return None
+void oceanLedFinal() {
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
+  FastLED.show();
+}
+
+int compteurAimants() {
+  int compteur = 0;
+
+  if (digitalRead(pinCapteurAimant1) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant2) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant3) == LOW) compteur++;
+
+  return compteur;
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  FastLED.addLeds<WS2812B, RIVER, GRB>(river_leds, RIVER_NUM_LEDS);
+  FastLED.addLeds<WS2812B, OCEAN, GRB>(ocean_leds, OCEAN_NUM_LEDS);
+  FastLED.setBrightness(255);
+  
+  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR);
+  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
+  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
+  FastLED.show();
+
+  pinMode(pinCapteurAimant1, INPUT_PULLUP);
+  pinMode(pinCapteurAimant2, INPUT_PULLUP);
+  pinMode(pinCapteurAimant3, INPUT_PULLUP);
+
+  pinMode(pinBouton, INPUT_PULLUP); 
+
+  delay(1000);
+}
+
+void loop() {
+  FastLED.show();
+
+  delay(2000);
+  riverLedFinal();
+  oceanLedFinal();
+
+  while (Serial.available()) {
+    char c = (char)Serial.read();
+    if (c == '\n') {
+      inputBuffer.trim();
+      if (inputBuffer == "SEPARATION") {
+        riverLedFinal();
+        oceanLedFinal();
+        pipeRiverFinal();
+        pipeOceanFinal();
+      } else if (inputBuffer == "compteurAimants") {
+        int count = compteurAimants();
+        Serial.println(count);
+      } else if (inputBuffer == "PIPE_OCEAN") {
+        pipeOcean();
+      } else if (inputBuffer == "PIPE_RIVER") {
+        pipeRiver();
+      }
+      inputBuffer = "";
+    } else if (c != '\r') {
+      inputBuffer += c;
+    }
+  }
+
+  int etatBouton = digitalRead(pinBouton);
+
+  if (etatBouton == LOW) {
+    Serial.println("PRESENCE");
+  }
+}
