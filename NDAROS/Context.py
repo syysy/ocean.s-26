@@ -70,6 +70,7 @@ class Context:
 	def stopVideo(self):
 		with self.videoLock:
 			if self.player:
+				self.player.set_fullscreen(False)  # Exit fullscreen first
 				self.player.stop()
 				self.player.release()
 				self.player = None
