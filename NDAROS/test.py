@@ -1,20 +1,26 @@
-import cv2
+import serial
+import time
+import sys
 
-video = cv2.VideoCapture("video.mp4")
+PORT = '/dev/ttyACM1'
+BAUD = 9600
+TIMEOUT = 1
 
-# Move window to second screen (adjust coordinates)
-cv2.namedWindow("Video", cv2.WINDOW_NORMAL)
-cv2.moveWindow("Video", 1920, 0)  # If second monitor starts at x=1920
+pinDO = 2
+pinAO = "A0" 
 
-while True:
-    ret, frame = video.read()
-    if not ret:
-        break
+try:
+	arduino = serial.Serial(port=PORT, baudrate=BAUD, timeout=TIMEOUT)
+	time.sleep(2)
+except Exception as e:
+	print(f"Error opening serial port {PORT}: {e}", file=sys.stderr)
+	sys.exit(1)
 
-    cv2.imshow("Video", frame)
+def main():
+	while True:
+		arduino.write(f"LED\n".encode('utf-8'))
+		time.sleep(10)
+	
+	arduino.close()
 
-    if cv2.waitKey(25) & 0xFF == ord('q'):
-        break
-
-video.release()
-cv2.destroyAllWindows()
+main()
