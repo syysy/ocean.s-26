@@ -4,9 +4,9 @@
 #define RIVER_NUM_LEDS 20
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 20
-#define PIPE_RIVER 13
+#define PIPE_RIVER 8
 #define PIPE_RIVER_NUM_LEDS 20
-#define PIPE_OCEAN 12
+#define PIPE_OCEAN 7
 #define PIPE_OCEAN_NUM_LEDS 20
 
 // OCEAN COLORS
