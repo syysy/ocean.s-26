@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import time
 
 class State(ABC):
 	@abstractmethod
@@ -64,16 +65,33 @@ class PopupMangroveState(State):
 		self.context = context
 
 	def execute(self):
-		self.context.changeState(ProductionMangroveState(self.context)) # 1 mangrove placée
-		self.context.execute()
+		self.context.send("compteurAimants\n")
+		while True:
+			if self.context.arduino.in_waiting > 0:
+				line = self.context.receive()
+				counter = int(line)
+				if counter >= 1:
+					self.context.changeState(ProductionMangroveState(self.context)) # 1 mangrove placée
+					self.context.execute()
+					break
 
 class ProductionMangroveState(State):
 	def __init__(self, context):
 		self.context = context
 
 	def execute(self):
-		self.context.changeState(CleanState(self.context)) # 5 min de délai après que toutes les mangroves aient été placées
-		self.context.execute()
+		# Vérifier que toutes les mangroves sont placées
+		while True:
+			self.context.send("compteurAimants\n")
+			if self.context.arduino.in_waiting > 0:
+				line = self.context.receive()
+				counter = int(line)
+				if counter >= 3: # Supposons qu'il y a 3 mangroves à placer
+					# Attendre 5 minutes après que toutes les mangroves soient placées
+					time.sleep(300) # 5 minutes
+					self.context.changeState(CleanState(self.context)) # 5 min de délai après que toutes les mangroves aient été placées
+					self.context.execute()
+					break
 
 class CleanState(State):
 	def __init__(self, context):
