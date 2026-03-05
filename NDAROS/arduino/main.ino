@@ -195,6 +195,17 @@ void centralAnimation() {
   central_led.show();
 }
 
+void centralRedAnimation() {
+  central_led.clear();
+  central_led.fill(CRGB::Red);
+  central_led.show();
+}
+
+void centralOffAnimation() {
+  central_led.clear();
+  central_led.show();
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -221,6 +232,9 @@ void setup() {
 
   central_led.begin();
   central_led.setBrightness(50);
+
+  centralOffAnimation();
+  centralRedAnimation();
 
   delay(1000);
 }
@@ -250,6 +264,7 @@ void loop() {
       } else if (inputBuffer == "PRESENCE") {
         if (presenceDetected()) {
           Serial.println("PRESENCE");
+          centralOffAnimation();
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
