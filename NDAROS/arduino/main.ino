@@ -1,11 +1,10 @@
-#include <FastLED.h>
 #include <Adafruit_NeoPixel.h>
 #include <math.h>
 
 #define RIVER 13
 #define RIVER_NUM_LEDS 20
 #define OCEAN 12
-#define OCEAN_NUM_LEDS 20
+#define OCEAN_NUM_LEDS 100
 #define PIPE_RIVER 11
 #define PIPE_RIVER_NUM_LEDS 50
 #define PIPE_OCEAN 10
@@ -18,7 +17,13 @@
 #define CENTRAL_BUTTON 22
 #define CENTRAL_NUM_LEDS 24
 
+// NeoPixel strips
+Adafruit_NeoPixel river_strip = Adafruit_NeoPixel(RIVER_NUM_LEDS, RIVER, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel ocean_strip = Adafruit_NeoPixel(OCEAN_NUM_LEDS, OCEAN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pipe_river_strip = Adafruit_NeoPixel(PIPE_RIVER_NUM_LEDS, PIPE_RIVER, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pipe_ocean_strip = Adafruit_NeoPixel(PIPE_OCEAN_NUM_LEDS, PIPE_OCEAN, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel central_led = Adafruit_NeoPixel(CENTRAL_NUM_LEDS, CENTRAL_LEDS, NEO_GRB + NEO_KHZ800);
+
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
 bool isCentralButtonClicked = false;
@@ -29,25 +34,18 @@ bool isCentralButtonClicked = false;
 
 #define CAPTEUR_PRESENCE 7
 
-// OCEAN COLORS
-#define OCEAN_COLOR CRGB(70, 150, 215)
-#define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
-#define OCEAN_COLOR_1 CRGB(59, 135, 202)
-#define OCEAN_COLOR_2 CRGB(36, 104, 177)
-#define OCEAN_COLOR_FINAL CRGB(14, 73, 151)
+// OCEAN COLORS (as 32-bit packed color: Color(R, G, B))
+#define OCEAN_COLOR ocean_strip.Color(70, 150, 215)
+#define OCEAN_COLOR_1 ocean_strip.Color(59, 135, 202)
+#define OCEAN_COLOR_2 ocean_strip.Color(36, 104, 177)
+#define OCEAN_COLOR_FINAL ocean_strip.Color(14, 73, 151)
 
 // RIVER COLORS
-#define RIVER_COLOR CRGB(70, 150, 215)
-#define RIVER_HIGHLIGHT CRGB(255, 255, 255)
-#define RIVER_COLOR_1 CRGB(66, 154, 204)
-#define RIVER_COLOR_2 CRGB(59, 163, 183)
-#define RIVER_COLOR_FINAL CRGB(52, 172, 161)
+#define RIVER_COLOR river_strip.Color(70, 150, 215)
+#define RIVER_COLOR_1 river_strip.Color(66, 154, 204)
+#define RIVER_COLOR_2 river_strip.Color(59, 163, 183)
+#define RIVER_COLOR_FINAL river_strip.Color(52, 172, 161)
 
-
-CRGB river_leds[RIVER_NUM_LEDS];
-CRGB ocean_leds[OCEAN_NUM_LEDS];
-CRGB pipe_river_leds[PIPE_RIVER_NUM_LEDS];
-CRGB pipe_ocean_leds[PIPE_OCEAN_NUM_LEDS];
 String inputBuffer = "";
 
 // Non-blocking pipe animation state
@@ -59,18 +57,28 @@ unsigned long pipeRiverLastUpdate = 0;
 unsigned long pipeOceanLastUpdate = 0;
 const unsigned long PIPE_DELAY = 100;
 
+// Helper function to show all strips
+void showAllStrips() {
+  river_strip.show();
+  ocean_strip.show();
+  pipe_river_strip.show();
+  pipe_ocean_strip.show();
+}
+
 void initLeds() {
-  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
-  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Red);
-  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Red);
-  FastLED.show();
+  river_strip.fill(river_strip.Color(255, 0, 0));
+  ocean_strip.fill(ocean_strip.Color(255, 0, 0));
+  pipe_river_strip.fill(pipe_river_strip.Color(255, 0, 0));
+  pipe_ocean_strip.fill(pipe_ocean_strip.Color(255, 0, 0));
+  showAllStrips();
 }
 
 void resetPipes() {
-  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
-  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
-  FastLED.show();
+  pipe_river_strip.fill(0);
+  pipe_ocean_strip.fill(0);
+  pipe_river_strip.show();
+  pipe_ocean_strip.show();
+  showAllStrips();
 }
 
 void pipeRiver() {
@@ -90,7 +98,8 @@ void updatePipeAnimations() {
   
   if (pipeRiverActive && (now - pipeRiverLastUpdate >= PIPE_DELAY)) {
     if (pipeRiverIndex < PIPE_RIVER_NUM_LEDS) {
-      pipe_river_leds[pipeRiverIndex] = RIVER_COLOR;
+      pipe_river_strip.setPixelColor(pipeRiverIndex, RIVER_COLOR);
+      pipe_river_strip.show();
       pipeRiverIndex++;
       pipeRiverLastUpdate = now;
     } else {
@@ -100,7 +109,8 @@ void updatePipeAnimations() {
   
   if (pipeOceanActive && (now - pipeOceanLastUpdate >= PIPE_DELAY)) {
     if (pipeOceanIndex < PIPE_OCEAN_NUM_LEDS) {
-      pipe_ocean_leds[pipeOceanIndex] = OCEAN_COLOR;
+      pipe_ocean_strip.setPixelColor(pipeOceanIndex, OCEAN_COLOR);
+      pipe_ocean_strip.show();
       pipeOceanIndex++;
       pipeOceanLastUpdate = now;
     } else {
@@ -110,33 +120,34 @@ void updatePipeAnimations() {
 }
 
 void oceanRiverLed() {
-  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR); 
-  FastLED.show();
+  river_strip.fill(RIVER_COLOR);
+  ocean_strip.fill(OCEAN_COLOR); 
+  river_strip.show();
+  ocean_strip.show();
 }
 
 void mangroveLed1() {
-	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_1);
-	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_1);
-	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_1);
-	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_1);
-	FastLED.show();
+  pipe_river_strip.fill(RIVER_COLOR_1);
+  pipe_ocean_strip.fill(OCEAN_COLOR_1);
+  river_strip.fill(RIVER_COLOR_1);
+  ocean_strip.fill(OCEAN_COLOR_1);
+  showAllStrips();
 }
 
 void mangroveLed2() {
-	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_2);
-	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_2);
-	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_2);
-	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_2);
-	FastLED.show();
+  pipe_river_strip.fill(RIVER_COLOR_2);
+  pipe_ocean_strip.fill(OCEAN_COLOR_2);
+  river_strip.fill(RIVER_COLOR_2);
+  ocean_strip.fill(OCEAN_COLOR_2);
+  showAllStrips();
 }
 
 void mangroveLed3() {
-	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
-	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
-	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
-	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
-	FastLED.show();
+  pipe_river_strip.fill(RIVER_COLOR_FINAL);
+  pipe_ocean_strip.fill(OCEAN_COLOR_FINAL);
+  river_strip.fill(RIVER_COLOR_FINAL);
+  ocean_strip.fill(OCEAN_COLOR_FINAL);
+  showAllStrips();
 }
 
 int compteurAimants() {
@@ -180,13 +191,13 @@ void runCentralAnimation() {
 
 void centralAnimation() {
   central_led.clear();
-  central_led.fill(CRGB::White);
+  central_led.fill(central_led.Color(255, 255, 255));
   central_led.show();
 }
 
 void centralRedAnimation() {
   central_led.clear();
-  central_led.fill(CRGB::Red);
+  central_led.fill(central_led.Color(255, 0, 0));
   central_led.show();
 }
 
@@ -199,11 +210,18 @@ void centralOffAnimation() {
 void setup() {
   Serial.begin(9600);
 
-  FastLED.addLeds<WS2812B, RIVER, GRB>(river_leds, RIVER_NUM_LEDS);
-  FastLED.addLeds<WS2812B, OCEAN, GRB>(ocean_leds, OCEAN_NUM_LEDS);
-  FastLED.addLeds<WS2812B, PIPE_RIVER, GRB>(pipe_river_leds, PIPE_RIVER_NUM_LEDS);
-  FastLED.addLeds<WS2812B, PIPE_OCEAN, GRB>(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS);
-  FastLED.setBrightness(255);
+  // Initialize all NeoPixel strips
+  river_strip.begin();
+  ocean_strip.begin();
+  pipe_river_strip.begin();
+  pipe_ocean_strip.begin();
+  central_led.begin();
+  
+  river_strip.setBrightness(255);
+  ocean_strip.setBrightness(255);
+  pipe_river_strip.setBrightness(255);
+  pipe_ocean_strip.setBrightness(255);
+  central_led.setBrightness(50);
   
   pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
@@ -215,9 +233,6 @@ void setup() {
   pinMode(RIVER_BUTTON, INPUT_PULLUP);
   pinMode(OCEAN_BUTTON, INPUT_PULLUP);
 
-  central_led.begin();
-  central_led.setBrightness(50);
-
   delay(1000);
 }
 
@@ -225,7 +240,6 @@ void loop() {
   // Update non-blocking pipe animations
   updatePipeAnimations();
   
-  FastLED.show();
   if (isCentralAnimActive) {
     runCentralAnimation();
   }
@@ -270,7 +284,6 @@ void loop() {
         while (!isPipeCentralButtonPressed()) {
             delay(50);
             runCentralAnimation();
-            FastLED.show();
         }
         isCentralButtonClicked = true;
         Serial.println("BUTTON_CENTRAL_PRESSED");
