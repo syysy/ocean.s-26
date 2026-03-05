@@ -85,7 +85,7 @@ class ProductionState(State):
 		self.start_time = time.time()
 
 	def execute(self):
-		while time.time() - self.start_time < 60:
+		while time.time() - self.start_time < 10:
 			time.sleep(0.1)
 			
 		self.context.displaySlide(7)  # Popup mangrove
@@ -98,38 +98,110 @@ class PopupMangroveState(State):
 		self.context = context
 		self.context.displaySlide(7)  # Placement mangrove
 
-	def handle_input(self, message: str):
+	def execute(self):
 		while True:
-			self.context.send("compteurAimants\n")
-			if self.context.arduino.in_waiting > 0:
-				line = self.context.receive()
-				counter = int(line)
-				self.context.mangroveNumber = counter
-				if counter > 0:
-					self.context.displaySlide(8)  # Production mangrove
-					return ProductionMangroveState(self.context)
+			self.context.send("MAGNET_COUNTER\n")
+			line = self.context.receive()
+			if line:
+				try:
+					counter = int(line)
+					self.context.mangroveNumber = counter
+					if counter > 0:
+						self.context.displaySlide(8)  # Production mangrove
+						self.context.changeState(ProductionMangroveState(self.context))
+						self.context.execute()
+						return
+				except ValueError:
+					pass
+			time.sleep(0.1)
 
 class ProductionMangroveState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(8)  # Affichage production mangrove
-		self.start_time = time.time()
-		self.mangroves_placed = 1
+		self.last_magnet_count = 0
+		self.max_reached_time = None
+		self.context.displaySlide(8)  # Affichage production mangrove (1/5)
 
-	def handle_input(self, message: str):
-		if message == "MANGROVE_PLACED":
-			self.mangroves_placed += 1
-		
-		# Attendre 5 min après que toutes mangroves soient placées
-		if self.mangroves_placed >= 3 and time.time() - self.start_time > 300:
-			self.context.displaySlide(9)  # Fin
-			return CleanState(self.context)
-		return None
+	def execute(self):
+		while True:
+			self.context.send("MAGNET_COUNTER\n")
+			line = self.context.receive()
+			
+			if line:
+				try:
+					magnet_count = int(line)
+				except ValueError:
+					time.sleep(0.1)
+					continue
+				
+				# Si le nombre de magnets diminue
+				if magnet_count < self.last_magnet_count:
+					# Si on était à 5 et qu'on avait un timer, reset
+					if self.last_magnet_count == 5 and self.max_reached_time is not None:
+						# Reset du processus - retour à PopupMangroveState
+						self.context.changeState(PopupMangroveState(self.context))
+						self.context.execute()
+						return
+					
+					# Si le nombre diminue à 0, revenir à PopupMangroveState
+					if magnet_count == 0:
+						self.context.changeState(PopupMangroveState(self.context))
+						self.context.execute()
+						return
+				
+				# Mettre à jour le compteur
+				self.last_magnet_count = magnet_count
+				
+				# Switch case pour afficher la slide appropriée
+				self.display_slide_for_magnet_count(magnet_count)
+				
+				# Gestion du timer pour 5 magnets
+				if magnet_count == 5:
+					if self.max_reached_time is None:
+						self.max_reached_time = time.time()
+					
+					# Si 20 secondes ont passé avec 5 magnets
+					if time.time() - self.max_reached_time > 20:
+						self.context.displaySlide(13)  # Slide de fin
+						self.context.changeState(CleanState(self.context))
+						self.context.execute()
+						return
+				else:
+					# Reset le timer si on n'est pas à 5
+					self.max_reached_time = None
+			
+			time.sleep(0.1)
+	
+	def display_slide_for_magnet_count(self, count):
+		"""Affiche la slide correspondante au nombre de magnets"""
+		if count == 0:
+			pass  # Rien à afficher
+		elif count == 1:
+			self.context.displaySlide(8)   # 1/5
+		elif count == 2:
+			self.context.displaySlide(9)   # 2/5
+		elif count == 3:
+			self.context.displaySlide(10)  # 3/5
+		elif count == 4:
+			self.context.displaySlide(11)  # 4/5
+		elif count >= 5:
+			self.context.displaySlide(12)  # 5/5
+
+class ProductionCompleteState(State):
+	def __init__(self, context):
+		self.context = context
+		self.context.displaySlide(13)  # Slide de fin
+
+	def execute(self):
+		if time.time() - self.max_reached_time > 20:
+			self.context.displaySlide(13)  # Slide de fin
+			self.context.changeState(CleanState(self.context))
+			self.context.execute()
 
 class CleanState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(10)  # Remerciements
+		self.context.displaySlide(13)  # Remerciements
 		self.start_time = time.time()
 
 	def handle_input(self, message: str):

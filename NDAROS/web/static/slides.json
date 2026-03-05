@@ -39,18 +39,38 @@
         },
         {
             "type": "text",
-            "title": "Production active",
-            "content": "<h2>Production active</h2><p>Mangroves en cours de génération...</p>"
+            "title": "Mangroves nécessaires",
+            "content": "<h2>Production limités</h2><p>Placez les mangroves pour améliorer la production</p>"
         },
         {
             "type": "text",
-            "title": "Placement des mangroves",
-            "content": "<h2>Placez vos mangroves</h2><p>Positionnez les plantes dans l'écosystème</p>"
+            "title": "Placement mangroves 1/5",
+            "content": "<h2>Placez les mangroves</h2><p>1 / 5</p>"
         },
         {
             "type": "text",
-            "title": "Écosystème en développement",
-            "content": "<h2>Votre écosystème pousse</h2><p>Les mangroves se développent...</p>"
+            "title": "Placement mangroves 2/5",
+            "content": "<h2>Placez les mangroves</h2><p>2 / 5</p>"
+        },
+        {
+            "type": "text",
+            "title": "Placement mangroves 3/5",
+            "content": "<h2>Placez les mangroves</h2><p>3 / 5</p>"
+        },
+        {
+            "type": "text",
+            "title": "Placement mangroves 4/5",
+            "content": "<h2>Placez les mangroves</h2><p>4 / 5</p>"
+        },
+        {
+            "type": "text",
+            "title": "Placement mangroves 5/5",
+            "content": "<h2>Placez les mangroves</h2><p>5 / 5</p>"
+        },
+        {
+            "type": "text",
+            "title": "Écosystème optimisée",
+            "content": "<h2>Écosystème optimisé</h2><p>Production maximale atteinte</p>"
         },
         {
             "type": "text",
