@@ -13,10 +13,9 @@
             "fullscreen": true
         },
         {
-            "type": "video",
-            "src": "danse.mp4",
-            "title": "",
-            "fullscreen": true
+            "type": "text",
+            "title": "Bienvenue",
+            "content": "<h1>Appuyez sur les boutons</h1>"
         },
         {
             "type": "html",
