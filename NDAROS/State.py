@@ -64,7 +64,8 @@ class ReadyProductionState(State):
 		self.context.displaySlide(5)  # En attente du bouton central
 
 	def execute(self):
-		while self.context.receive() != "POWER_PLANT_BUTTON":
+		self.context.send("BUTTON_CENTRAL\n")
+		while self.context.receive() != "BUTTON_CENTRAL_PRESSED":
 			time.sleep(0.1)
 
 		self.context.displaySlide(6)  # Production lancée

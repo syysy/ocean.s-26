@@ -1,26 +1,34 @@
 #include <FastLED.h>
+#include <Adafruit_NeoPixel.h>
+#include <math.h>
 
 #define RIVER 13
 #define RIVER_NUM_LEDS 20
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 20
 #define PIPE_RIVER 11
-#define PIPE_RIVER_NUM_LEDS 20
+#define PIPE_RIVER_NUM_LEDS 50
 #define PIPE_OCEAN 10
-#define PIPE_OCEAN_NUM_LEDS 20
+#define PIPE_OCEAN_NUM_LEDS 50
 
-#define PIPE_RIVER_BUTTON 8
-#define PIPE_OCEAN_BUTTON 9
+#define RIVER_BUTTON 8
+#define OCEAN_BUTTON 9
 
-#define PIPE_CENTRAL_LEDS 14
+#define CENTRAL_LEDS 23
+#define CENTRAL_BUTTON 22
+#define CENTRAL_NUM_LEDS 24
 
-#define PIPE_CAPTEUR_AIMANT_1 2
-#define PIPE_CAPTEUR_AIMANT_2 3
-#define PIPE_CAPTEUR_AIMANT_3 4
-#define PIPE_CAPTEUR_AIMANT_4 5
-#define PIPE_CAPTEUR_AIMANT_5 6
+Adafruit_NeoPixel central_led = Adafruit_NeoPixel(CENTRAL_NUM_LEDS, CENTRAL_LEDS, NEO_GRB + NEO_KHZ800);
+float centralOffset = 0.0; 
+bool isCentralAnimActive = false;
 
-#define PIPE_CAPTEUR_PRESENCE 7
+#define CAPTEUR_AIMANT_1 2
+#define CAPTEUR_AIMANT_2 3
+#define CAPTEUR_AIMANT_3 4
+#define CAPTEUR_AIMANT_4 5
+#define CAPTEUR_AIMANT_5 6
+
+#define CAPTEUR_PRESENCE 7
 
 // OCEAN COLORS
 #define OCEAN_COLOR CRGB(55, 180, 255)
@@ -128,25 +136,48 @@ void oceanLedFinal() {
 int compteurAimants() {
   int compteur = 0;
 
-  if (digitalRead(PIPE_CAPTEUR_AIMANT_1) == LOW) compteur++;
-  if (digitalRead(PIPE_CAPTEUR_AIMANT_2) == LOW) compteur++;
-  if (digitalRead(PIPE_CAPTEUR_AIMANT_3) == LOW) compteur++;
-  if (digitalRead(PIPE_CAPTEUR_AIMANT_4) == LOW) compteur++;
-  if (digitalRead(PIPE_CAPTEUR_AIMANT_5) == LOW) compteur++;
+  if (digitalRead(CAPTEUR_AIMANT_1) == LOW) compteur++;
+  if (digitalRead(CAPTEUR_AIMANT_2) == LOW) compteur++;
+  if (digitalRead(CAPTEUR_AIMANT_3) == LOW) compteur++;
+  if (digitalRead(CAPTEUR_AIMANT_4) == LOW) compteur++;
+  if (digitalRead(CAPTEUR_AIMANT_5) == LOW) compteur++;
 
   return compteur;
 }
 
 bool presenceDetected() {
-  return digitalRead(PIPE_CAPTEUR_PRESENCE) == HIGH;
+  return digitalRead(CAPTEUR_PRESENCE) == HIGH;
 }
 
 bool isPipeRiverButtonPressed() {
-  return digitalRead(PIPE_RIVER_BUTTON) == LOW;
+  return digitalRead(RIVER_BUTTON) == LOW;
 }
 
 bool isPipeOceanButtonPressed() {
-  return digitalRead(PIPE_OCEAN_BUTTON) == LOW;
+  return digitalRead(OCEAN_BUTTON) == LOW;
+}
+
+bool isPipeCentralButtonPressed() {
+  return digitalRead(CENTRAL_BUTTON) == LOW;
+}
+
+void runCentralAnimation() {
+  central_led.clear();
+  for(int i = 0; i < PIPE_CENTRAL_NUM_LEDS; i++) {
+    float position = (float)i / PIPE_CENTRAL_NUM_LEDS; 
+    float onde = sin( (position * 6.28) + centralOffset ); 
+    float intensite = pow((onde + 1.0) / 2.0, 2); 
+
+    central_led.setPixelColor(i, central_led.Color((int)(255 * intensite), (int)(180 * intensite), 0));
+  }
+  central_led.show();
+  centralOffset -= 0.1; 
+}
+
+void centralAnimation() {
+  central_led.clear();
+  central_led.fill(CRGB::White);
+  central_led.show();
 }
 
 
@@ -165,23 +196,29 @@ void setup() {
   fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
   FastLED.show();
 
-  pinMode(PIPE_CAPTEUR_AIMANT_1, INPUT_PULLUP);
-  pinMode(PIPE_CAPTEUR_AIMANT_2, INPUT_PULLUP);
-  pinMode(PIPE_CAPTEUR_AIMANT_3, INPUT_PULLUP);
-  pinMode(PIPE_CAPTEUR_AIMANT_4, INPUT_PULLUP);
-  pinMode(PIPE_CAPTEUR_AIMANT_5, INPUT_PULLUP);
+  pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
+  pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
+  pinMode(CAPTEUR_AIMANT_3, INPUT_PULLUP);
+  pinMode(CAPTEUR_AIMANT_4, INPUT_PULLUP);
+  pinMode(CAPTEUR_AIMANT_5, INPUT_PULLUP);
 
-  pinMode(PIPE_CAPTEUR_PRESENCE, INPUT_PULLUP);
+  pinMode(CAPTEUR_PRESENCE, INPUT_PULLUP);
+  pinMode(CENTRAL_BUTTON, INPUT_PULLUP);
 
-  pinMode(PIPE_RIVER_BUTTON, INPUT_PULLUP);
-  pinMode(PIPE_OCEAN_BUTTON, INPUT_PULLUP);
+  pinMode(RIVER_BUTTON, INPUT_PULLUP);
+  pinMode(OCEAN_BUTTON, INPUT_PULLUP);
+
+  central_led.begin();
+  central_led.setBrightness(50);
 
   delay(1000);
 }
 
 void loop() {
   FastLED.show();
-
+  if (isCentralAnimActive) {
+    runCentralAnimation();
+  }
 
   while (Serial.available()) {
     char c = (char)Serial.read();
@@ -212,6 +249,14 @@ void loop() {
         }
         if (isPipeOceanButtonPressed()) {
           Serial.println("BUTTON_OCEAN_PRESSED");
+        }
+      } else if (inputBuffer == "BUTTON_CENTRAL") {
+        // Allumer les lumiere de la centrale
+         isCentralAnimActive = true;
+        if (isPipeCentralButtonPressed()) {
+          Serial.println("BUTTON_CENTRAL_PRESSED");
+          centralAnimation();
+          isCentralAnimActive = false;
         }
       }
       inputBuffer = "";
