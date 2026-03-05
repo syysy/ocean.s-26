@@ -216,8 +216,6 @@ void setup() {
   FastLED.addLeds<WS2812B, PIPE_OCEAN, GRB>(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
-  initLeds();
-
   pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_3, INPUT_PULLUP);
@@ -232,9 +230,6 @@ void setup() {
 
   central_led.begin();
   central_led.setBrightness(50);
-
-  centralOffAnimation();
-  centralRedAnimation();
 
   delay(1000);
 }
@@ -278,18 +273,21 @@ void loop() {
           Serial.println("BUTTON_OCEAN_PRESSED");
         }
       } else if (inputBuffer == "BUTTON_CENTRAL") {
-        // Allumer les lumiere de la centrale
         isCentralAnimActive = true;
         while (!isPipeCentralButtonPressed()) {
             delay(50);
-            runCentralAnimation();  // Continuer l'animation pendant l'attente
+            runCentralAnimation();
             FastLED.show();
         }
         isCentralButtonClicked = true;
         Serial.println("BUTTON_CENTRAL_PRESSED");
         centralAnimation();
         isCentralAnimActive = false;
-        delay(500);  // Debounce
+        delay(500);
+	  } else if (inputBuffer == "RESET") {
+        initLeds();
+		centralOffAnimation();
+		centralRedAnimation();
       }
       inputBuffer = "";
     } else if (c != '\r') {

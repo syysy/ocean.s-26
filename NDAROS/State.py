@@ -13,6 +13,7 @@ class AlertState(State):
 		self.context.displaySlide(0)  # Affichage slide accueil
 	
 	def execute(self):
+		self.context.send("RESET\n")
 		while True:
 			self.context.send("PRESENCE\n")
 			msg = self.context.receive()
