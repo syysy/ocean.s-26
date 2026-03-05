@@ -37,6 +37,7 @@ void pipeRiver() {
   for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
     pipe_river_leds[i] = RIVER_COLOR;
     FastLED.show();
+	delay(200);
   }
   /*while (1) {
     fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR);
@@ -50,9 +51,10 @@ void pipeRiver() {
 }
 
 void pipeOcean() {
-  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
-    pipe_river_leds[i] = OCEAN_COLOR;
+  for (unsigned i = 0; i < PIPE_OCEAN_NUM_LEDS; i++) {
+    pipe_ocean_leds[i] = OCEAN_COLOR;
     FastLED.show();
+    delay(200);
   }
   /*while (1) {
     fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR);
@@ -82,8 +84,8 @@ void pipeRiverFinal() {
 }
 
 void pipeOceanFinal() {
-  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
-    pipe_river_leds[i] = OCEAN_COLOR_FINAL;
+  for (unsigned i = 0; i < PIPE_OCEAN_NUM_LEDS; i++) {
+    pipe_ocean_leds[i] = OCEAN_COLOR_FINAL;
     FastLED.show();
   }
   /*while (1) {
