@@ -49,6 +49,7 @@ class PipeState(State):
 		while count < 2:
 			if count == 1:
 				self.context.displaySlide(3)  # Afficher la slide du milieu après le premier bouton
+			self.context.send("PIPE_AVAILABLE\n")
 			if self.context.receive() == "BUTTON_RIVER_PRESSED":
 				self.context.send("PIPE_OCEAN\n")
 				count += 1

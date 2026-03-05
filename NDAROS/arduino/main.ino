@@ -9,6 +9,19 @@
 #define PIPE_OCEAN 10
 #define PIPE_OCEAN_NUM_LEDS 20
 
+#define PIPE_RIVER_BUTTON 8
+#define PIPE_OCEAN_BUTTON 9
+
+#define PIPE_CENTRAL_LEDS 14
+
+#define PIPE_CAPTEUR_AIMANT_1 2
+#define PIPE_CAPTEUR_AIMANT_2 3
+#define PIPE_CAPTEUR_AIMANT_3 4
+#define PIPE_CAPTEUR_AIMANT_4 5
+#define PIPE_CAPTEUR_AIMANT_5 6
+
+#define PIPE_CAPTEUR_PRESENCE 7
+
 // OCEAN COLORS
 #define OCEAN_COLOR CRGB(55, 180, 255)
 #define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
@@ -18,13 +31,6 @@
 #define RIVER_COLOR CRGB(55, 180, 255)
 #define RIVER_HIGHLIGHT CRGB(255, 255, 255)
 #define RIVER_COLOR_FINAL CRGB(0, 42, 255)
-
-const int pinCapteurAimant1 = 2;
-const int pinCapteurAimant2 = 3;
-const int pinCapteurAimant3 = 4;
-const int pinCapteurAimant4 = 5;
-const int pinCapteurAimant5 = 6;
-const int pinCapteurPresence = 7;
 
 
 CRGB river_leds[RIVER_NUM_LEDS];
@@ -122,18 +128,27 @@ void oceanLedFinal() {
 int compteurAimants() {
   int compteur = 0;
 
-  if (digitalRead(pinCapteurAimant1) == LOW) compteur++;
-  if (digitalRead(pinCapteurAimant2) == LOW) compteur++;
-  if (digitalRead(pinCapteurAimant3) == LOW) compteur++;
-  if (digitalRead(pinCapteurAimant4) == LOW) compteur++;
-  if (digitalRead(pinCapteurAimant5) == LOW) compteur++;
+  if (digitalRead(PIPE_CAPTEUR_AIMANT_1) == LOW) compteur++;
+  if (digitalRead(PIPE_CAPTEUR_AIMANT_2) == LOW) compteur++;
+  if (digitalRead(PIPE_CAPTEUR_AIMANT_3) == LOW) compteur++;
+  if (digitalRead(PIPE_CAPTEUR_AIMANT_4) == LOW) compteur++;
+  if (digitalRead(PIPE_CAPTEUR_AIMANT_5) == LOW) compteur++;
 
   return compteur;
 }
 
 bool presenceDetected() {
-  return digitalRead(pinCapteurPresence) == HIGH;
+  return digitalRead(PIPE_CAPTEUR_PRESENCE) == HIGH;
 }
+
+bool isPipeRiverButtonPressed() {
+  return digitalRead(PIPE_RIVER_BUTTON) == LOW;
+}
+
+bool isPipeOceanButtonPressed() {
+  return digitalRead(PIPE_OCEAN_BUTTON) == LOW;
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -150,13 +165,16 @@ void setup() {
   fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
   FastLED.show();
 
-  pinMode(pinCapteurAimant1, INPUT_PULLUP);
-  pinMode(pinCapteurAimant2, INPUT_PULLUP);
-  pinMode(pinCapteurAimant3, INPUT_PULLUP);
-  pinMode(pinCapteurAimant4, INPUT_PULLUP);
-  pinMode(pinCapteurAimant5, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_AIMANT_1, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_AIMANT_2, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_AIMANT_3, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_AIMANT_4, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_AIMANT_5, INPUT_PULLUP);
 
-  pinMode(pinCapteurPresence, INPUT_PULLUP);
+  pinMode(PIPE_CAPTEUR_PRESENCE, INPUT_PULLUP);
+
+  pinMode(PIPE_RIVER_BUTTON, INPUT_PULLUP);
+  pinMode(PIPE_OCEAN_BUTTON, INPUT_PULLUP);
 
   delay(1000);
 }
@@ -174,7 +192,7 @@ void loop() {
         oceanLedFinal();
         pipeRiverFinal();
         pipeOceanFinal();
-      } else if (inputBuffer == "compteurAimants") {
+      } else if (inputBuffer == "CAPTEUR_AIMANT") {
         int count = compteurAimants();
         Serial.println(count);
       } else if (inputBuffer == "PIPE_OCEAN") {
@@ -187,7 +205,14 @@ void loop() {
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
-		riverLed();
+        riverLed();
+      } else if (inputBuffer == "PIPE_AVAILABLE") {
+        if (isPipeRiverButtonPressed()) {
+          Serial.println("BUTTON_RIVER_PRESSED");
+        }
+        if (isPipeOceanButtonPressed()) {
+          Serial.println("BUTTON_OCEAN_PRESSED");
+        }
       }
       inputBuffer = "";
     } else if (c != '\r') {
