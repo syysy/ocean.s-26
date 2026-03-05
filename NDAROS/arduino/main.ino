@@ -2,7 +2,7 @@
 #include <math.h>
 
 #define RIVER 13
-#define RIVER_NUM_LEDS 20
+#define RIVER_NUM_LEDS 100
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 100
 #define PIPE_RIVER 11
