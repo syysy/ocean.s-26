@@ -10,12 +10,12 @@
 #define PIPE_OCEAN_NUM_LEDS 20
 
 // OCEAN COLORS
-#define OCEAN_COLOR CRGB::Red
+#define OCEAN_COLOR CRGB(55, 180, 255)
 #define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
 #define OCEAN_COLOR_FINAL CRGB(77, 255, 255)
 
 // RIVER COLORS
-#define RIVER_COLOR CRGB::Red
+#define RIVER_COLOR CRGB(55, 180, 255)
 #define RIVER_HIGHLIGHT CRGB(255, 255, 255)
 #define RIVER_COLOR_FINAL CRGB(0, 42, 255)
 
@@ -144,8 +144,8 @@ void setup() {
   FastLED.addLeds<WS2812B, PIPE_OCEAN, GRB>(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
-  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Black);
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Black);
+  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
   fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
   fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
   FastLED.show();
