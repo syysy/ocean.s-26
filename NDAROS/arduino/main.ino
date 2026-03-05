@@ -26,8 +26,6 @@ bool isCentralButtonClicked = false;
 #define CAPTEUR_AIMANT_1 2
 #define CAPTEUR_AIMANT_2 3
 #define CAPTEUR_AIMANT_3 4
-#define CAPTEUR_AIMANT_4 5
-#define CAPTEUR_AIMANT_5 6
 
 #define CAPTEUR_PRESENCE 7
 
@@ -52,6 +50,15 @@ CRGB pipe_river_leds[PIPE_RIVER_NUM_LEDS];
 CRGB pipe_ocean_leds[PIPE_OCEAN_NUM_LEDS];
 String inputBuffer = "";
 
+// Non-blocking pipe animation state
+bool pipeRiverActive = false;
+bool pipeOceanActive = false;
+unsigned int pipeRiverIndex = 0;
+unsigned int pipeOceanIndex = 0;
+unsigned long pipeRiverLastUpdate = 0;
+unsigned long pipeOceanLastUpdate = 0;
+const unsigned long PIPE_DELAY = 100;
+
 void initLeds() {
   fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
   fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
@@ -67,18 +74,38 @@ void resetPipes() {
 }
 
 void pipeRiver() {
-  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
-    pipe_river_leds[i] = RIVER_COLOR;
-    FastLED.show();
-	delay(200);
-  }
+  pipeRiverActive = true;
+  pipeRiverIndex = 0;
+  pipeRiverLastUpdate = millis();
 }
 
 void pipeOcean() {
-  for (unsigned i = 0; i < PIPE_OCEAN_NUM_LEDS; i++) {
-    pipe_ocean_leds[i] = OCEAN_COLOR;
-    FastLED.show();
-    delay(200);
+  pipeOceanActive = true;
+  pipeOceanIndex = 0;
+  pipeOceanLastUpdate = millis();
+}
+
+void updatePipeAnimations() {
+  unsigned long now = millis();
+  
+  if (pipeRiverActive && (now - pipeRiverLastUpdate >= PIPE_DELAY)) {
+    if (pipeRiverIndex < PIPE_RIVER_NUM_LEDS) {
+      pipe_river_leds[pipeRiverIndex] = RIVER_COLOR;
+      pipeRiverIndex++;
+      pipeRiverLastUpdate = now;
+    } else {
+      pipeRiverActive = false;
+    }
+  }
+  
+  if (pipeOceanActive && (now - pipeOceanLastUpdate >= PIPE_DELAY)) {
+    if (pipeOceanIndex < PIPE_OCEAN_NUM_LEDS) {
+      pipe_ocean_leds[pipeOceanIndex] = OCEAN_COLOR;
+      pipeOceanIndex++;
+      pipeOceanLastUpdate = now;
+    } else {
+      pipeOceanActive = false;
+    }
   }
 }
 
@@ -118,8 +145,6 @@ int compteurAimants() {
   if (digitalRead(CAPTEUR_AIMANT_1) == LOW) compteur++;
   if (digitalRead(CAPTEUR_AIMANT_2) == LOW) compteur++;
   if (digitalRead(CAPTEUR_AIMANT_3) == LOW) compteur++;
-  if (digitalRead(CAPTEUR_AIMANT_4) == LOW) compteur++;
-  if (digitalRead(CAPTEUR_AIMANT_5) == LOW) compteur++;
 
   return compteur;
 }
@@ -183,8 +208,6 @@ void setup() {
   pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_3, INPUT_PULLUP);
-  pinMode(CAPTEUR_AIMANT_4, INPUT_PULLUP);
-  pinMode(CAPTEUR_AIMANT_5, INPUT_PULLUP);
 
   pinMode(CAPTEUR_PRESENCE, INPUT_PULLUP);
   pinMode(CENTRAL_BUTTON, INPUT_PULLUP);
@@ -199,6 +222,9 @@ void setup() {
 }
 
 void loop() {
+  // Update non-blocking pipe animations
+  updatePipeAnimations();
+  
   FastLED.show();
   if (isCentralAnimActive) {
     runCentralAnimation();
@@ -253,8 +279,8 @@ void loop() {
         delay(500);
 	  } else if (inputBuffer == "RESET") {
         initLeds();
-		    centralOffAnimation();
-		    centralRedAnimation();
+		centralOffAnimation();
+		centralRedAnimation();
       }
       inputBuffer = "";
     } else if (c != '\r') {

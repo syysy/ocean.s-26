@@ -190,26 +190,24 @@ class ProductionMangroveState(State):
 class ProductionCompleteState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(13)  # Slide de fin
+		self.context.displaySlide(11)  # Slide de fin
 		self.start_time = time.time()
 
 	def execute(self):
-		while time.time() - self.start_time < 3:
-			self.context.displaySlide(14)  # Slide de fin
+		while time.time() - self.start_time < 10:
+			self.context.displaySlide(12)  # Slide de fin
 			self.context.changeState(CleanState(self.context))
 			self.context.execute()
 
 class CleanState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(14)  # Remerciements
+		self.context.displaySlide(12)  # Remerciements
 		self.start_time = time.time()
 
 	def execute(self):
-		# Attendre 5 secondes avant de revenir à l'accueil
 		while time.time() - self.start_time < 5:
 			time.sleep(0.1)
 		
-		# Après 5 secondes, retourner à AlertState
 		self.context.changeState(AlertState(self.context))
 		self.context.execute()
