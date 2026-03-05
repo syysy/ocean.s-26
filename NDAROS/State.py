@@ -19,11 +19,14 @@ class AlertState(State):
 		return None
 	
 	def execute(self):
-		while self.context.receive() != "PRESENCE":
+		while True:
+			self.context.send("PRESENCE\n")
+			msg = self.context.receive()
+			if msg == "PRESENCE":
+				break
 			time.sleep(0.1)
 		
 		self.context.displaySlide(1)
-
 		self.context.changeState(PresentationState(self.context))
 		self.context.execute()
 

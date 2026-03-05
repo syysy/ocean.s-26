@@ -19,8 +19,6 @@
 #define RIVER_HIGHLIGHT CRGB(255, 255, 255)
 #define RIVER_COLOR_FINAL CRGB(0, 42, 255)
 
-const int pinBouton = 8;
-
 const int pinCapteurAimant1 = 2;
 const int pinCapteurAimant2 = 3;
 const int pinCapteurAimant3 = 4;
@@ -183,7 +181,7 @@ void loop() {
         pipeRiver();
       } else if (inputBuffer == "PRESENCE") {
         if (presenceDetected()) {
-          Serial.println("PRESENCE DETECTEE");
+          Serial.println("PRESENCE");
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
@@ -192,11 +190,5 @@ void loop() {
     } else if (c != '\r') {
       inputBuffer += c;
     }
-  }
-
-  int etatBouton = digitalRead(pinBouton);
-
-  if (etatBouton == LOW) {
-    Serial.println("PRESENCE");
   }
 }
