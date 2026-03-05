@@ -75,6 +75,7 @@ class PipeState(State):
 	def execute(self):
 		count = 0
 		while count < 2:
+			self.context.send("PIPE_AVAILABLE\n")
 			if self.context.receive() == "BUTTON_RIVER_PRESSED":
 				self.context.send("PIPE_OCEAN\n")
 				count += 1
@@ -134,7 +135,7 @@ class PopupMangroveState(State):
 
 	def handle_input(self, message: str):
 		while True:
-			self.context.send("compteurAimants\n")
+			self.context.send("CAPTEUR_AIMANT\n")
 			if self.context.arduino.in_waiting > 0:
 				line = self.context.receive()
 				counter = int(line)
