@@ -14,7 +14,7 @@ class AlertState(State):
 
 	def handle_input(self, message: str):
 		if message == "PRESENCE":
-			self.context.displaySlide(1)  # Affichage danse video
+			self.context.displaySlide(1)  
 			return PresentationState(self.context)
 		return None
 	
@@ -30,6 +30,7 @@ class AlertState(State):
 class PresentationState(State):
 	def __init__(self, context):
 		self.context = context
+		self.start_time = time.time()
 
 	def handle_input(self, message: str):
 		if message == "DEMARRAGE":
@@ -38,10 +39,10 @@ class PresentationState(State):
 		return None
 
 	def execute(self):
-		while self.context.receive() != "DEMARRAGE":
+		while time.time() - self.start_time < 10:
 			time.sleep(0.1)
 		
-		self.context.displaySlide(3)
+		self.context.displaySlide(2)
 
 		self.context.changeState(PipeState(self.context))
 		self.context.execute()
