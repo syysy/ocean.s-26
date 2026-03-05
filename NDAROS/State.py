@@ -11,12 +11,6 @@ class AlertState(State):
 	def __init__(self, context):
 		self.context = context
 		self.context.displaySlide(0)  # Affichage slide accueil
-
-	def handle_input(self, message: str):
-		if message == "PRESENCE":
-			self.context.displaySlide(1)  
-			return PresentationState(self.context)
-		return None
 	
 	def execute(self):
 		while True:
@@ -35,12 +29,6 @@ class PresentationState(State):
 		self.context = context
 		self.start_time = time.time()
 
-	def handle_input(self, message: str):
-		if message == "DEMARRAGE":
-			self.context.displaySlide(2)  # Boutons sélection
-			return PipeState(self.context)
-		return None
-
 	def execute(self):
 		while time.time() - self.start_time < 10:
 			time.sleep(0.1)
@@ -55,23 +43,6 @@ class PipeState(State):
 		self.context = context
 		self.start_time = time.time()
 
-	def handle_input(self, message: str):
-     
-		# Attendre que 2 boutons soient pressés
-		if message == "OCEAN_RIVER":
-			self.context.displaySlide(4)  # Transition production
-			return ReadyProductionState(self.context)
-		elif message == "OCEAN_POWER":
-			self.context.displaySlide(4)
-			return ReadyProductionState(self.context)
-		elif message == "RIVER_POWER":
-			self.context.displaySlide(4)
-			return ReadyProductionState(self.context)
-		elif message == "DEMARRAGE":
-			self.context.displaySlide(0)
-			return AlertState(self.context)
-		return None
-	
 	def execute(self):
 		count = 0
 		while count < 2:
@@ -90,12 +61,6 @@ class ReadyProductionState(State):
 		self.context = context
 		self.context.displaySlide(5)  # En attente du bouton central
 
-	def handle_input(self, message: str):# En attente du bouton central
-		if message == "CENTER_BUTTON":
-			self.context.displaySlide(6)  # Production lancée
-			return ProductionState(self.context)
-		return None
-
 	def execute(self):
 		while self.context.receive() != "POWER_PLANT_BUTTON":
 			time.sleep(0.1)
@@ -110,13 +75,6 @@ class ProductionState(State):
 		self.context = context
 		self.context.displaySlide(6)  # Production
 		self.start_time = time.time()
-
-	def handle_input(self, message: str):
-		# Attendre 1 minute avant popup mangrove
-		if time.time() - self.start_time > 60:
-			self.context.displaySlide(7)  # Popup mangrove
-			return PopupMangroveState(self.context)
-		return None
 
 	def execute(self):
 		while time.time() - self.start_time < 60:
