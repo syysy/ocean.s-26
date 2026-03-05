@@ -2,7 +2,19 @@
     "slides": [
         {
             "type": "image",
+            "src": "emergency.gif",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
             "src": "ndaros.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "video",
+            "src": "danse.mp4",
             "title": "",
             "fullscreen": true
         },
