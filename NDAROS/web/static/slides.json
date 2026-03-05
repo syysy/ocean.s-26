@@ -18,18 +18,18 @@
             "content": "<h1>Appuyez sur les boutons</h1>"
         },
         {
-            "type": "html",
-            "title": "Sélection des écosystèmes",
-            "html": "<div class='slide-content'><h2>Choisissez vos écosystèmes</h2><div class='buttons-grid'><button class='eco-btn ocean'>🌊 Océan</button><button class='eco-btn river'>🏞️ Rivière</button><button class='eco-btn power'>⚡ Centrale</button></div></div>"
+            "type": "text",
+            "title": "Premier appui",
+            "html": "<h1> 1 / 2 </h1><p>Appuyez à nouveau pour continuer...</p>"
         },
         {
             "type": "text",
-            "title": "Production en cours",
-            "content": "<h2>Production de mangroves</h2><p>Appuyez sur le bouton central pour commencer...</p>"
+            "title": "Second appui",
+            "html": "<h1> 2 / 2 </h1><p>Démarrage en cours...</p>"
         },
         {
             "type": "text",
-            "title": "En attente de validation",
+            "title": "Prêt à produire",
             "content": "<h2>Prêt à produire?</h2><p>Appuyez sur le bouton central pour valider</p>"
         },
         {
