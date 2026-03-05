@@ -22,18 +22,16 @@ class AlertState(State):
 class PresentationState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(2)  # Video présentation
 
 	def handle_input(self, message: str):
 		if message == "DEMARRAGE":
-			self.context.displaySlide(3)  # Boutons sélection
+			self.context.displaySlide(2)  # Boutons sélection
 			return PipeState(self.context)
 		return None
 
 class PipeState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(3)  # Affiche les 3 options
 		self.start_time = time.time()
 
 	def handle_input(self, message: str):
@@ -49,7 +47,8 @@ class PipeState(State):
 			self.context.displaySlide(4)
 			return ReadyProductionState(self.context)
 		elif message == "DEMARRAGE":
-			self.context.displaySlide(0)  
+			self.context.displaySlide(0)
+			return AlertState(self.context)
 		return None
 
 class ReadyProductionState(State):
