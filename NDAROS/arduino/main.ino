@@ -35,18 +35,14 @@ bool isCentralButtonClicked = false;
 #define OCEAN_COLOR CRGB(70, 150, 215)
 #define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
 #define OCEAN_COLOR_1 CRGB(59, 135, 202)
-#define OCEAN_COLOR_2 CRGB(48, 119, 189)
-#define OCEAN_COLOR_3 CRGB(36, 104, 177)
-#define OCEAN_COLOR_4 CRGB(25, 88, 164)
+#define OCEAN_COLOR_2 CRGB(36, 104, 177)
 #define OCEAN_COLOR_FINAL CRGB(14, 73, 151)
 
 // RIVER COLORS
 #define RIVER_COLOR CRGB(70, 150, 215)
 #define RIVER_HIGHLIGHT CRGB(255, 255, 255)
 #define RIVER_COLOR_1 CRGB(66, 154, 204)
-#define RIVER_COLOR_2 CRGB(63, 159, 193)
-#define RIVER_COLOR_3 CRGB(59, 163, 183)
-#define RIVER_COLOR_4 CRGB(56, 168, 172)
+#define RIVER_COLOR_2 CRGB(59, 163, 183)
 #define RIVER_COLOR_FINAL CRGB(52, 172, 161)
 
 
@@ -109,22 +105,6 @@ void mangroveLed2() {
 }
 
 void mangroveLed3() {
-	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_3);
-	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_3);
-	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_3);
-	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_3);
-	FastLED.show();
-}
-
-void mangroveLed4() {
-	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_4);
-	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_4);
-	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_4);
-	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_4);
-	FastLED.show();
-}
-
-void mangroveLed5() {
 	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
 	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
 	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
@@ -236,10 +216,6 @@ void loop() {
             mangroveLed2();
         } else if (aimants == 3) {
             mangroveLed3();
-        } else if (aimants == 4) {
-            mangroveLed4();
-        } else if (aimants >= 5) {
-            mangroveLed5();
         }
       } else if (inputBuffer == "MAGNET_COUNTER") {
         int count = compteurAimants();
