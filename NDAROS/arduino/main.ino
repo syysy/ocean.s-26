@@ -38,7 +38,7 @@ void pipeRiver() {
     pipe_river_leds[i] = RIVER_COLOR;
     FastLED.show();
   }
-  while (1) {
+  /*while (1) {
     fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR);
 
     static int firstOffset = 0;
@@ -46,7 +46,7 @@ void pipeRiver() {
     pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
     FastLED.show();
     delay(150);
-  }
+  }*/
 }
 
 void pipeOcean() {
@@ -86,7 +86,7 @@ void pipeOceanFinal() {
     pipe_river_leds[i] = OCEAN_COLOR_FINAL;
     FastLED.show();
   }
-  while (1) {
+  /*while (1) {
     fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
 
     static int firstOffset = 0;
@@ -94,7 +94,7 @@ void pipeOceanFinal() {
     pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
     FastLED.show();
     delay(150);
-  }
+  }*/
 }
 
 void riverLed() {
@@ -154,8 +154,6 @@ void setup() {
   pinMode(pinCapteurAimant4, INPUT_PULLUP);
   pinMode(pinCapteurAimant5, INPUT_PULLUP);
 
-  pinMode(pinBouton, INPUT_PULLUP); 
-
   pinMode(pinCapteurPresence, INPUT_PULLUP);
 
   delay(1000);
@@ -187,6 +185,7 @@ void loop() {
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
+		riverLed();
       }
       inputBuffer = "";
     } else if (c != '\r') {
