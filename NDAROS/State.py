@@ -45,17 +45,19 @@ class PipeState(State):
 		self.start_time = time.time()
 
 	def execute(self):
-		count = 0
-		while count < 2:
-			if count == 1:
+		btn_river_pressed = False
+		btn_ocean_pressed = False
+		while not (btn_river_pressed and btn_ocean_pressed):
+			if (btn_river_pressed and not btn_ocean_pressed) or (btn_ocean_pressed and not btn_river_pressed):
 				self.context.displaySlide(3)  # Afficher la slide du milieu après le premier bouton
 			self.context.send("PIPE_AVAILABLE\n")
 			if self.context.receive() == "BUTTON_RIVER_PRESSED":
+				btn_river_pressed = True
 				self.context.send("PIPE_OCEAN\n")
-				count += 1
 			elif self.context.receive() == "BUTTON_OCEAN_PRESSED":
+				btn_ocean_pressed = True
 				self.context.send("PIPE_RIVER\n")
-				count += 1
+    
 		self.context.displaySlide(4)  # Afficher la slide finale après les deux boutons
 		time.sleep(5)  # Laisser le temps de lire la slide
 		self.context.changeState(ReadyProductionState(self.context))
@@ -73,7 +75,7 @@ class ReadyProductionState(State):
 
 		self.context.displaySlide(6)  # Production lancée
 		
-		self.context.changeState(ReadyProductionState(self.context))
+		self.context.changeState(ProductionState(self.context))
 		self.context.execute()
 
 class ProductionState(State):

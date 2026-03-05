@@ -21,6 +21,7 @@
 Adafruit_NeoPixel central_led = Adafruit_NeoPixel(CENTRAL_NUM_LEDS, CENTRAL_LEDS, NEO_GRB + NEO_KHZ800);
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
+bool isCentralButtonClicked = false;
 
 #define CAPTEUR_AIMANT_1 2
 #define CAPTEUR_AIMANT_2 3
@@ -252,12 +253,17 @@ void loop() {
         }
       } else if (inputBuffer == "BUTTON_CENTRAL") {
         // Allumer les lumiere de la centrale
-         isCentralAnimActive = true;
-        if (isPipeCentralButtonPressed()) {
-          Serial.println("BUTTON_CENTRAL_PRESSED");
-          centralAnimation();
-          isCentralAnimActive = false;
+        isCentralAnimActive = true;
+        while (!isPipeCentralButtonPressed()) {
+            delay(50);
+            runCentralAnimation();  // Continuer l'animation pendant l'attente
+            FastLED.show();
         }
+        isCentralButtonClicked = true;
+        Serial.println("BUTTON_CENTRAL_PRESSED");
+        centralAnimation();
+        isCentralAnimActive = false;
+        delay(500);  // Debounce
       }
       inputBuffer = "";
     } else if (c != '\r') {
