@@ -162,9 +162,9 @@ class ProductionMangroveState(State):
 						self.max_reached_time = time.time()
 					
 					# Si 20 secondes ont passé avec 5 magnets
-					if time.time() - self.max_reached_time > 20:
+					if time.time() - self.max_reached_time > 5:
 						self.context.displaySlide(13)  # Slide de fin
-						self.context.changeState(CleanState(self.context))
+						self.context.changeState(ProductionCompleteState(self.context))
 						self.context.execute()
 						return
 				else:
@@ -192,21 +192,25 @@ class ProductionCompleteState(State):
 	def __init__(self, context):
 		self.context = context
 		self.context.displaySlide(13)  # Slide de fin
+		self.start_time = time.time()
 
 	def execute(self):
-		if time.time() - self.max_reached_time > 20:
-			self.context.displaySlide(13)  # Slide de fin
+		while time.time() - self.start_time < 5:
+			self.context.displaySlide(14)  # Slide de fin
 			self.context.changeState(CleanState(self.context))
 			self.context.execute()
 
 class CleanState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(13)  # Remerciements
+		self.context.displaySlide(14)  # Remerciements
 		self.start_time = time.time()
 
-	def handle_input(self, message: str):
-		# Après 5 secondes, revenir à l'accueil
-		if time.time() - self.start_time > 5:
-			return AlertState(self.context)
-		return None
+	def execute(self):
+		# Attendre 5 secondes avant de revenir à l'accueil
+		while time.time() - self.start_time < 5:
+			time.sleep(0.1)
+		
+		# Après 5 secondes, retourner à AlertState
+		self.context.changeState(AlertState(self.context))
+		self.context.execute()

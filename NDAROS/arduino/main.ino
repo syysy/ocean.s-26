@@ -249,7 +249,7 @@ void loop() {
         oceanLedFinal();
         pipeRiverFinal();
         pipeOceanFinal();
-      } else if (inputBuffer == "CAPTEUR_AIMANT") {
+      } else if (inputBuffer == "MAGNET_COUNTER") {
         int count = compteurAimants();
         Serial.println(count);
       } else if (inputBuffer == "PIPE_OCEAN") {
@@ -264,7 +264,7 @@ void loop() {
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
         riverLed();
-		resetPipes();
+		    resetPipes();
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
@@ -286,8 +286,8 @@ void loop() {
         delay(500);
 	  } else if (inputBuffer == "RESET") {
         initLeds();
-		centralOffAnimation();
-		centralRedAnimation();
+		    centralOffAnimation();
+		    centralRedAnimation();
       }
       inputBuffer = "";
     } else if (c != '\r') {
