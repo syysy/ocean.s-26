@@ -47,6 +47,8 @@ class PipeState(State):
 	def execute(self):
 		count = 0
 		while count < 2:
+			if count == 1:
+				self.context.displaySlide(3)  # Afficher la slide du milieu après le premier bouton
 			self.context.send("PIPE_AVAILABLE\n")
 			if self.context.receive() == "BUTTON_RIVER_PRESSED":
 				self.context.send("PIPE_OCEAN\n")
@@ -54,7 +56,8 @@ class PipeState(State):
 			elif self.context.receive() == "BUTTON_OCEAN_PRESSED":
 				self.context.send("PIPE_RIVER\n")
 				count += 1
-		
+		self.context.displaySlide(4)  # Afficher la slide finale après les deux boutons
+		time.sleep(5)  # Laisser le temps de lire la slide
 		self.context.changeState(ReadyProductionState(self.context))
 		self.context.execute()
 
