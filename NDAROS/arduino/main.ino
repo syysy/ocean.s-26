@@ -163,8 +163,8 @@ bool isPipeCentralButtonPressed() {
 
 void runCentralAnimation() {
   central_led.clear();
-  for(int i = 0; i < PIPE_CENTRAL_NUM_LEDS; i++) {
-    float position = (float)i / PIPE_CENTRAL_NUM_LEDS; 
+  for(int i = 0; i < CENTRAL_NUM_LEDS; i++) {
+    float position = (float)i / CENTRAL_NUM_LEDS; 
     float onde = sin( (position * 6.28) + centralOffset ); 
     float intensite = pow((onde + 1.0) / 2.0, 2); 
 
