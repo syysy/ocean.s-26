@@ -54,7 +54,7 @@ void pipeOcean() {
     pipe_river_leds[i] = OCEAN_COLOR;
     FastLED.show();
   }
-  while (1) {
+  /*while (1) {
     fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR);
 
     static int firstOffset = 0;
@@ -62,7 +62,7 @@ void pipeOcean() {
     pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
     FastLED.show();
     delay(150);
-  }
+  }*/
 }
 
 void pipeRiverFinal() {
@@ -70,7 +70,7 @@ void pipeRiverFinal() {
     pipe_river_leds[i] = RIVER_COLOR_FINAL;
     FastLED.show();
   }
-  while (1) {
+  /*while (1) {
     fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
 
     static int firstOffset = 0;
@@ -78,7 +78,7 @@ void pipeRiverFinal() {
     pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
     FastLED.show();
     delay(150);
-  }
+  }*/
 }
 
 void pipeOceanFinal() {
@@ -138,6 +138,8 @@ void setup() {
 
   FastLED.addLeds<WS2812B, RIVER, GRB>(river_leds, RIVER_NUM_LEDS);
   FastLED.addLeds<WS2812B, OCEAN, GRB>(ocean_leds, OCEAN_NUM_LEDS);
+  FastLED.addLeds<WS2812B, PIPE_RIVER, GRB>(pipe_river_leds, PIPE_RIVER_NUM_LEDS);
+  FastLED.addLeds<WS2812B, PIPE_OCEAN, GRB>(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
   fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Black);
