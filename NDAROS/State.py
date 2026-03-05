@@ -21,6 +21,7 @@ class AlertState(State):
 			time.sleep(0.1)
 		
 		self.context.displaySlide(1)
+		self.context.send("OCEAN_RIVER\n")
 		self.context.changeState(PresentationState(self.context))
 		self.context.execute()
 
