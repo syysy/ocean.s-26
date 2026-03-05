@@ -20,17 +20,22 @@
         {
             "type": "text",
             "title": "Premier appui",
-            "html": "<h1> 1 / 2 </h1><p>Appuyez à nouveau pour continuer...</p>"
+            "content": "<h1> 1 / 2 </h1><p>Appuyez à nouveau pour continuer...</p>"
         },
         {
             "type": "text",
             "title": "Second appui",
-            "html": "<h1> 2 / 2 </h1><p>Démarrage en cours...</p>"
+            "content": "<h1> 2 / 2 </h1><p>Démarrage en cours...</p>"
         },
         {
             "type": "text",
             "title": "Prêt à produire",
             "content": "<h2>Prêt à produire?</h2><p>Appuyez sur le bouton central pour valider</p>"
+        },
+        {
+            "type": "text",
+            "title": "Production en cours",
+            "content": "<h2>Production en cours</h2>"
         },
         {
             "type": "text",
