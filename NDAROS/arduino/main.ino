@@ -96,6 +96,16 @@ void pipeOceanFinal() {
   }
 }
 
+void riverLed() {
+  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
+  FastLED.show();
+}
+
+void oceanLed() {
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR);
+  FastLED.show();
+}
+
 void riverLedFinal() {
   fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
   FastLED.show();
@@ -123,8 +133,8 @@ void setup() {
   FastLED.addLeds<WS2812B, OCEAN, GRB>(ocean_leds, OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
-  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR);
+  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Black);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Black);
   fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
   fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
   FastLED.show();
@@ -141,9 +151,6 @@ void setup() {
 void loop() {
   FastLED.show();
 
-  delay(2000);
-  riverLedFinal();
-  oceanLedFinal();
 
   while (Serial.available()) {
     char c = (char)Serial.read();
@@ -161,6 +168,9 @@ void loop() {
         pipeOcean();
       } else if (inputBuffer == "PIPE_RIVER") {
         pipeRiver();
+      } else if (inputBuffer == "OCEAN_RIVER") {
+        oceanLed();
+		riverLed();
       }
       inputBuffer = "";
     } else if (c != '\r') {
