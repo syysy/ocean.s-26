@@ -73,7 +73,6 @@ def main():
 			print("Cannot start without Arduino connection", file=sys.stderr)
 			sys.exit(1)
 		
-		# Lancer le navigateur en fullscreen dans un thread séparé
 		browser_thread = subprocess.Popen(['python', '-c', 
 			'import time, webbrowser, subprocess; '
 			'time.sleep(2); '
@@ -82,7 +81,6 @@ def main():
 			'subprocess.run(["xdotool", "key", "F11"], capture_output=True)'
 		], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 		
-		# Lancer la boucle principale
 		context.execute()
 		
 	except KeyboardInterrupt:

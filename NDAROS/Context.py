@@ -184,29 +184,4 @@ class Context:
 			print(f"Error displaying slide: {e}")
 	
 	def execute(self):
-		print(f"\033[91mCurrent State: {self.state.__class__.__name__}\033[0m")
-		print("Running main loop... listening for Arduino messages")
-		
-		# Boucle principale unique
-		while True:
-			try:
-				# Lire message Arduino
-				message = self.receive()
-				
-				if message:
-					# Laisser l'état actuel traiter le message
-					next_state = self.state.handle_input(message)
-					
-					# Si un nouvel état est retourné, le changer
-					if next_state:
-						self.changeState(next_state)
-				
-				# Court délai pour éviter consommation CPU
-				time.sleep(0.1)
-				
-			except KeyboardInterrupt:
-				print("Interrupted by user")
-				break
-			except Exception as e:
-				print(f"Error in main loop: {e}")
-				time.sleep(1)
+		self.state.execute()

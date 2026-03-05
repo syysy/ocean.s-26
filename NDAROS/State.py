@@ -4,8 +4,7 @@ import time
 
 class State(ABC):
 	@abstractmethod
-	def handle_input(self, message: str):
-		"""Handle message from Arduino and return next state or None"""
+	def execute(self):
 		pass
 
 class AlertState(State):
@@ -18,6 +17,15 @@ class AlertState(State):
 			self.context.displaySlide(1)  # Affichage danse video
 			return PresentationState(self.context)
 		return None
+	
+	def execute(self):
+		while self.context.receive() != "PRESENCE":
+			time.sleep(0.1)
+		
+		self.context.displaySlide(1)
+
+		self.context.changeState(PresentationState(self.context))
+		self.context.execute()
 
 class PresentationState(State):
 	def __init__(self, context):
@@ -28,6 +36,15 @@ class PresentationState(State):
 			self.context.displaySlide(2)  # Boutons sélection
 			return PipeState(self.context)
 		return None
+
+	def execute(self):
+		while self.context.receive() != "DEMARRAGE":
+			time.sleep(0.1)
+		
+		self.context.displaySlide(3)
+
+		self.context.changeState(PipeState(self.context))
+		self.context.execute()
 
 class PipeState(State):
 	def __init__(self, context):
@@ -50,6 +67,19 @@ class PipeState(State):
 			self.context.displaySlide(0)
 			return AlertState(self.context)
 		return None
+	
+	def execute(self):
+		count = 0
+		while count < 2:
+			if self.context.receive() == "BUTTON_RIVER_PRESSED":
+				self.context.send("PIPE_OCEAN\n")
+				count += 1
+			elif self.context.receive() == "BUTTON_OCEAN_PRESSED":
+				self.context.send("PIPE_RIVER\n")
+				count += 1
+		
+		self.context.changeState(ReadyProductionState(self.context))
+		self.context.execute()
 
 class ReadyProductionState(State):
 	def __init__(self, context):
@@ -61,6 +91,15 @@ class ReadyProductionState(State):
 			self.context.displaySlide(6)  # Production lancée
 			return ProductionState(self.context)
 		return None
+
+	def execute(self):
+		while self.context.receive() != "POWER_PLANT_BUTTON":
+			time.sleep(0.1)
+
+		self.context.displaySlide(6)  # Production lancée
+		
+		self.context.changeState(ReadyProductionState(self.context))
+		self.context.execute()
 
 class ProductionState(State):
 	def __init__(self, context):
@@ -74,6 +113,15 @@ class ProductionState(State):
 			self.context.displaySlide(7)  # Popup mangrove
 			return PopupMangroveState(self.context)
 		return None
+
+	def execute(self):
+		while time.time() - self.start_time < 60:
+			time.sleep(0.1)
+			
+		self.context.displaySlide(7)  # Popup mangrove
+		
+		self.context.changeState(PopupMangroveState(self.context))
+		self.context.execute()
 
 class PopupMangroveState(State):
 	def __init__(self, context):
