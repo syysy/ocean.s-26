@@ -24,6 +24,9 @@ const int pinBouton = 8;
 const int pinCapteurAimant1 = 2;
 const int pinCapteurAimant2 = 3;
 const int pinCapteurAimant3 = 4;
+const int pinCapteurAimant4 = 5;
+const int pinCapteurAimant5 = 6;
+const int pinCapteurPresence = 7; // A Corriger
 
 
 CRGB river_leds[RIVER_NUM_LEDS];
@@ -112,8 +115,14 @@ int compteurAimants() {
   if (digitalRead(pinCapteurAimant1) == LOW) compteur++;
   if (digitalRead(pinCapteurAimant2) == LOW) compteur++;
   if (digitalRead(pinCapteurAimant3) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant4) == LOW) compteur++;
+  if (digitalRead(pinCapteurAimant5) == LOW) compteur++;
 
   return compteur;
+}
+
+bool presenceDetected() {
+  return digitalRead(pinCapteurPresence) == HIGH;
 }
 
 void setup() {
@@ -132,8 +141,12 @@ void setup() {
   pinMode(pinCapteurAimant1, INPUT_PULLUP);
   pinMode(pinCapteurAimant2, INPUT_PULLUP);
   pinMode(pinCapteurAimant3, INPUT_PULLUP);
+  pinMode(pinCapteurAimant4, INPUT_PULLUP);
+  pinMode(pinCapteurAimant5, INPUT_PULLUP);
 
   pinMode(pinBouton, INPUT_PULLUP); 
+
+  pinMode(pinCapteurPresence, INPUT_PULLUP);
 
   delay(1000);
 }
@@ -161,6 +174,10 @@ void loop() {
         pipeOcean();
       } else if (inputBuffer == "PIPE_RIVER") {
         pipeRiver();
+      } else if (inputBuffer == "PRESENCE") {
+        if (presenceDetected()) {
+          Serial.println("PRESENCE DETECTEE");
+        }
       }
       inputBuffer = "";
     } else if (c != '\r') {
