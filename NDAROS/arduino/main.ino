@@ -32,13 +32,21 @@ bool isCentralButtonClicked = false;
 #define CAPTEUR_PRESENCE 7
 
 // OCEAN COLORS
-#define OCEAN_COLOR CRGB(55, 180, 255)
+#define OCEAN_COLOR CRGB(70, 150, 215)
 #define OCEAN_HIGHLIGHT CRGB(255, 255, 255)
+#define OCEAN_COLOR_1 CRGB(59, 135, 202)
+#define OCEAN_COLOR_2 CRGB(48, 119, 189)
+#define OCEAN_COLOR_3 CRGB(36, 104, 177)
+#define OCEAN_COLOR_4 CRGB(25, 88, 164)
 #define OCEAN_COLOR_FINAL CRGB(14, 73, 151)
 
 // RIVER COLORS
-#define RIVER_COLOR CRGB(55, 180, 255)
+#define RIVER_COLOR CRGB(70, 150, 215)
 #define RIVER_HIGHLIGHT CRGB(255, 255, 255)
+#define RIVER_COLOR_1 CRGB(66, 154, 204)
+#define RIVER_COLOR_2 CRGB(63, 159, 193)
+#define RIVER_COLOR_3 CRGB(59, 163, 183)
+#define RIVER_COLOR_4 CRGB(56, 168, 172)
 #define RIVER_COLOR_FINAL CRGB(52, 172, 161)
 
 
@@ -68,15 +76,6 @@ void pipeRiver() {
     FastLED.show();
 	delay(200);
   }
-  /*while (1) {
-    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR);
-
-    static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
-    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
-    FastLED.show();
-    delay(150);
-  }*/
 }
 
 void pipeOcean() {
@@ -85,67 +84,52 @@ void pipeOcean() {
     FastLED.show();
     delay(200);
   }
-  /*while (1) {
-    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR);
-
-    static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
-    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
-    FastLED.show();
-    delay(150);
-  }*/
 }
 
-void pipeRiverFinal() {
-  for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
-    pipe_river_leds[i] = RIVER_COLOR_FINAL;
-    FastLED.show();
-  }
-  /*while (1) {
-    fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
-
-    static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % PIPE_RIVER_NUM_LEDS;
-    pipe_river_leds[firstOffset] = RIVER_HIGHLIGHT;
-    FastLED.show();
-    delay(150);
-  }*/
-}
-
-void pipeOceanFinal() {
-  for (unsigned i = 0; i < PIPE_OCEAN_NUM_LEDS; i++) {
-    pipe_ocean_leds[i] = OCEAN_COLOR_FINAL;
-    FastLED.show();
-  }
-  /*while (1) {
-    fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
-
-    static int firstOffset = 0;
-    firstOffset = (firstOffset + 1) % PIPE_OCEAN_NUM_LEDS;
-    pipe_ocean_leds[firstOffset] = OCEAN_HIGHLIGHT;
-    FastLED.show();
-    delay(150);
-  }*/
-}
-
-void riverLed() {
+void oceanRiverLed() {
   fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR); 
   FastLED.show();
 }
 
-void oceanLed() {
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR);
-  FastLED.show();
+void mangroveLed1() {
+	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_1);
+	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_1);
+	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_1);
+	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_1);
+	FastLED.show();
 }
 
-void riverLedFinal() {
-  fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
-  FastLED.show();
+void mangroveLed2() {
+	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_2);
+	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_2);
+	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_2);
+	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_2);
+	FastLED.show();
 }
 
-void oceanLedFinal() {
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
-  FastLED.show();
+void mangroveLed3() {
+	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_3);
+	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_3);
+	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_3);
+	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_3);
+	FastLED.show();
+}
+
+void mangroveLed4() {
+	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_4);
+	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_4);
+	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_4);
+	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_4);
+	FastLED.show();
+}
+
+void mangroveLed5() {
+	fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
+	fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
+	fill_solid(river_leds, RIVER_NUM_LEDS, RIVER_COLOR_FINAL);
+	fill_solid(ocean_leds, OCEAN_NUM_LEDS, OCEAN_COLOR_FINAL);
+	FastLED.show();
 }
 
 int compteurAimants() {
@@ -245,10 +229,17 @@ void loop() {
     if (c == '\n') {
       inputBuffer.trim();
       if (inputBuffer == "SEPARATION") {
-        riverLedFinal();
-        oceanLedFinal();
-        pipeRiverFinal();
-        pipeOceanFinal();
+		if (compteurAimants() == 1) {
+			mangroveLed1();
+		} else if (compteurAimants() == 2) {
+			mangroveLed2();
+		} else if (compteurAimants() == 3) {
+			mangroveLed3();
+		} else if (compteurAimants() == 4) {
+			mangroveLed4();
+		} else if (compteurAimants() == 5) {
+			mangroveLed5();
+		}
       } else if (inputBuffer == "MAGNET_COUNTER") {
         int count = compteurAimants();
         Serial.println(count);
@@ -262,9 +253,8 @@ void loop() {
           centralOffAnimation();
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
-        oceanLed();
-        riverLed();
-		    resetPipes();
+        oceanRiverLed();
+		resetPipes();
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
