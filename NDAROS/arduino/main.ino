@@ -48,6 +48,20 @@ CRGB pipe_river_leds[PIPE_RIVER_NUM_LEDS];
 CRGB pipe_ocean_leds[PIPE_OCEAN_NUM_LEDS];
 String inputBuffer = "";
 
+void initLeds() {
+  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
+  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
+  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Red);
+  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Red);
+  FastLED.show();
+}
+
+void resetPipes() {
+  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
+  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
+  FastLED.show();
+}
+
 void pipeRiver() {
   for (unsigned i = 0; i < PIPE_RIVER_NUM_LEDS; i++) {
     pipe_river_leds[i] = RIVER_COLOR;
@@ -191,11 +205,7 @@ void setup() {
   FastLED.addLeds<WS2812B, PIPE_OCEAN, GRB>(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS);
   FastLED.setBrightness(255);
   
-  fill_solid(river_leds, RIVER_NUM_LEDS, CRGB::Red);
-  fill_solid(ocean_leds, OCEAN_NUM_LEDS, CRGB::Red);
-  fill_solid(pipe_river_leds, PIPE_RIVER_NUM_LEDS, CRGB::Black);
-  fill_solid(pipe_ocean_leds, PIPE_OCEAN_NUM_LEDS, CRGB::Black);
-  FastLED.show();
+  initLeds();
 
   pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
   pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
@@ -244,6 +254,7 @@ void loop() {
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanLed();
         riverLed();
+		resetPipes();
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
