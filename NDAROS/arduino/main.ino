@@ -229,17 +229,18 @@ void loop() {
     if (c == '\n') {
       inputBuffer.trim();
       if (inputBuffer == "SEPARATION") {
-		if (compteurAimants() == 1) {
-			mangroveLed1();
-		} else if (compteurAimants() == 2) {
-			mangroveLed2();
-		} else if (compteurAimants() == 3) {
-			mangroveLed3();
-		} else if (compteurAimants() == 4) {
-			mangroveLed4();
-		} else if (compteurAimants() == 5) {
-			mangroveLed5();
-		}
+        int aimants = compteurAimants();
+        if (aimants == 1) {
+            mangroveLed1();
+        } else if (aimants == 2) {
+            mangroveLed2();
+        } else if (aimants == 3) {
+            mangroveLed3();
+        } else if (aimants == 4) {
+            mangroveLed4();
+        } else if (aimants >= 5) {
+            mangroveLed5();
+        }
       } else if (inputBuffer == "MAGNET_COUNTER") {
         int count = compteurAimants();
         Serial.println(count);

@@ -179,14 +179,19 @@ class ProductionMangroveState(State):
 			pass  # Rien à afficher
 		elif count == 1:
 			self.context.displaySlide(8)   # 1/5
+			self.context.send("SEPARATION\n")
 		elif count == 2:
 			self.context.displaySlide(9)   # 2/5
+			self.context.send("SEPARATION\n")
 		elif count == 3:
 			self.context.displaySlide(10)  # 3/5
+			self.context.send("SEPARATION\n")
 		elif count == 4:
 			self.context.displaySlide(11)  # 4/5
+			self.context.send("SEPARATION\n")
 		elif count >= 5:
 			self.context.displaySlide(12)  # 5/5
+			self.context.send("SEPARATION\n")
 
 class ProductionCompleteState(State):
 	def __init__(self, context):
