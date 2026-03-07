@@ -13,9 +13,12 @@
 #define RIVER_BUTTON 8
 #define OCEAN_BUTTON 9
 
-#define CENTRAL_LEDS 23
 #define CENTRAL_BUTTON 22
+#define CENTRAL_LEDS 23
 #define CENTRAL_NUM_LEDS 24
+
+#define CITY_LED 24
+#define CITY_NUM_LEDS 71
 
 // NeoPixel strips
 Adafruit_NeoPixel river_strip = Adafruit_NeoPixel(RIVER_NUM_LEDS, RIVER, NEO_GRB + NEO_KHZ800);
@@ -24,15 +27,18 @@ Adafruit_NeoPixel pipe_river_strip = Adafruit_NeoPixel(PIPE_RIVER_NUM_LEDS, PIPE
 Adafruit_NeoPixel pipe_ocean_strip = Adafruit_NeoPixel(PIPE_OCEAN_NUM_LEDS, PIPE_OCEAN, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel central_led = Adafruit_NeoPixel(CENTRAL_NUM_LEDS, CENTRAL_LEDS, NEO_GRB + NEO_KHZ800);
 
+Adafruit_NeoPixel city_leds(CITY_NUM_LEDS, CITY_LED, NEO_GRB + NEO_KHZ800);
+const int city_full_led_indices[] = {0, 3, 7, 10, 18, 25, 29, 31, 38, 50, 55, 60, 65, 70};
+const int nbIndicesFull = sizeof(city_full_led_indices) / sizeof(city_full_led_indices[0]);
+
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
-bool isCentralButtonClicked = false;
 
-#define CAPTEUR_AIMANT_1 2
-#define CAPTEUR_AIMANT_2 3
-#define CAPTEUR_AIMANT_3 4
+#define MAGNET_SENSOR_1 2
+#define MAGNET_SENSOR_2 3
+#define MAGNET_SENSOR_3 4
 
-#define CAPTEUR_PRESENCE 7
+#define PRESENCE_SENSOR 7
 
 // OCEAN COLORS (as 32-bit packed color: Color(R, G, B))
 #define OCEAN_COLOR ocean_strip.Color(70, 150, 215)
@@ -153,15 +159,15 @@ void mangroveLed3() {
 int compteurAimants() {
   int compteur = 0;
 
-  if (digitalRead(CAPTEUR_AIMANT_1) == LOW) compteur++;
-  if (digitalRead(CAPTEUR_AIMANT_2) == LOW) compteur++;
-  if (digitalRead(CAPTEUR_AIMANT_3) == LOW) compteur++;
+  if (digitalRead(MAGNET_SENSOR_1) == LOW) compteur++;
+  if (digitalRead(MAGNET_SENSOR_2) == LOW) compteur++;
+  if (digitalRead(MAGNET_SENSOR_3) == LOW) compteur++;
 
   return compteur;
 }
 
 bool presenceDetected() {
-  return digitalRead(CAPTEUR_PRESENCE) == HIGH;
+  return digitalRead(PRESENCE_SENSOR) == HIGH;
 }
 
 bool isPipeRiverButtonPressed() {
@@ -176,7 +182,7 @@ bool isPipeCentralButtonPressed() {
   return digitalRead(CENTRAL_BUTTON) == LOW;
 }
 
-void runCentralAnimation() {
+void centralYellowAnimation() {
   central_led.clear();
   for(int i = 0; i < CENTRAL_NUM_LEDS; i++) {
     float position = (float)i / CENTRAL_NUM_LEDS; 
@@ -189,10 +195,17 @@ void runCentralAnimation() {
   centralOffset -= 0.1; 
 }
 
-void centralAnimation() {
+void centrelWhiteAnimation() {
   central_led.clear();
-  central_led.fill(central_led.Color(255, 255, 255));
+  for(int i = 0; i < CENTRAL_NUM_LEDS; i++) {
+    float position = (float)i / CENTRAL_NUM_LEDS; 
+    float onde = sin( (position * 6.28) + centralOffset ); 
+    float intensite = pow((onde + 1.0) / 2.0, 2); 
+
+    central_led.setPixelColor(i, central_led.Color((int)(255 * intensite), (int)(255 * intensite), (int)(255 * intensite)));
+  }
   central_led.show();
+  centralOffset -= 0.1; 
 }
 
 void centralRedAnimation() {
@@ -206,6 +219,53 @@ void centralOffAnimation() {
   central_led.show();
 }
 
+void cityLedOnRed() {
+  city_leds.clear();
+  for (int i = 0; i < nbIndicesFull; i++) {
+    int ledIndex = city_full_led_indices[i];
+    if (ledIndex < CITY_NUM_LEDS) {
+      city_leds.setPixelColor(ledIndex, city_leds.Color(255, 0, 0)); 
+    }
+  }
+  city_leds.show();  
+}
+
+void UpdateCityLed(int aimants) {
+  city_leds.clear(); 
+
+  if (aimants > 0) {
+    int cleanAimants = constrain(aimants, 1, 3);
+    int intensity = 0;
+
+    if (cleanAimants == 1) intensity = 30; 
+    if (cleanAimants == 2) intensity = 110;
+    if (cleanAimants == 3) intensity = 255;
+
+    for (int i = 0; i < nbIndicesFull; i++) {
+      int ledIndex = city_full_led_indices[i];
+      if (ledIndex < CITY_NUM_LEDS) {
+        city_leds.setPixelColor(ledIndex, city_leds.Color(intensity, intensity, intensity));
+      }
+    }
+  } 
+  else {
+    // Cas 0 aimants : Faible intensité, une sur deux
+    int lowIntensity = 8; 
+    for (int i = 0; i < nbIndicesFull; i += 2) { 
+      int ledIndex = city_full_led_indices[i];
+      if (ledIndex < CITY_NUM_LEDS) {
+        city_leds.setPixelColor(ledIndex, city_leds.Color(lowIntensity, lowIntensity, lowIntensity));
+      }
+    }
+  }
+
+  city_leds.show();
+}
+
+void cityLedOff() {
+  city_leds.clear();
+  city_leds.show();
+}
 
 void setup() {
   Serial.begin(9600);
@@ -216,18 +276,20 @@ void setup() {
   pipe_river_strip.begin();
   pipe_ocean_strip.begin();
   central_led.begin();
+  city_leds.begin();
   
   river_strip.setBrightness(255);
   ocean_strip.setBrightness(255);
   pipe_river_strip.setBrightness(255);
   pipe_ocean_strip.setBrightness(255);
   central_led.setBrightness(50);
-  
-  pinMode(CAPTEUR_AIMANT_1, INPUT_PULLUP);
-  pinMode(CAPTEUR_AIMANT_2, INPUT_PULLUP);
-  pinMode(CAPTEUR_AIMANT_3, INPUT_PULLUP);
+  city_leds.setBrightness(255); 
 
-  pinMode(CAPTEUR_PRESENCE, INPUT_PULLUP);
+  pinMode(MAGNET_SENSOR_1, INPUT_PULLUP);
+  pinMode(MAGNET_SENSOR_2, INPUT_PULLUP);
+  pinMode(MAGNET_SENSOR_3, INPUT_PULLUP);
+
+  pinMode(PRESENCE_SENSOR, INPUT_PULLUP);
   pinMode(CENTRAL_BUTTON, INPUT_PULLUP);
 
   pinMode(RIVER_BUTTON, INPUT_PULLUP);
@@ -241,7 +303,9 @@ void loop() {
   updatePipeAnimations();
   
   if (isCentralAnimActive) {
-    runCentralAnimation();
+    centralYellowAnimation();
+  } else {
+    centrelWhiteAnimation();
   }
 
   while (Serial.available()) {
@@ -250,6 +314,7 @@ void loop() {
       inputBuffer.trim();
       if (inputBuffer == "SEPARATION") {
         int aimants = compteurAimants();
+        UpdateCityLed(aimants);
         if (aimants == 1) {
             mangroveLed1();
         } else if (aimants == 2) {
@@ -268,10 +333,11 @@ void loop() {
         if (presenceDetected()) {
           Serial.println("PRESENCE");
           centralOffAnimation();
+          cityLedOff();
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanRiverLed();
-		resetPipes();
+		    resetPipes();
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
@@ -283,17 +349,18 @@ void loop() {
         isCentralAnimActive = true;
         while (!isPipeCentralButtonPressed()) {
             delay(50);
-            runCentralAnimation();
+            centralYellowAnimation();
         }
-        isCentralButtonClicked = true;
         Serial.println("BUTTON_CENTRAL_PRESSED");
-        centralAnimation();
+        centrelWhiteAnimation();
+        UpdateCityLed(compteurAimants());
         isCentralAnimActive = false;
         delay(500);
 	  } else if (inputBuffer == "RESET") {
         initLeds();
-		centralOffAnimation();
-		centralRedAnimation();
+    		centralOffAnimation();
+		    centralRedAnimation();
+        cityLedOnRed();
       }
       inputBuffer = "";
     } else if (c != '\r') {
