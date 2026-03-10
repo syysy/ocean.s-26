@@ -307,6 +307,8 @@ void loop() {
     centralYellowAnimation();
   } else if (cityLedOn)
     centrelWhiteAnimation();
+  } else {
+    centralRedAnimation();
   }
 
   while (Serial.available()) {
