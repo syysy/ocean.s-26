@@ -354,17 +354,13 @@ void loop() {
         }
       } else if (inputBuffer == "BUTTON_CENTRAL") {
         isCentralAnimActive = true;
-        while (!isPipeCentralButtonPressed()) {
-            delay(50);
-            centralYellowAnimation();
-        }
         Serial.println("BUTTON_CENTRAL_PRESSED");
         centrelWhiteAnimation();
         UpdateCityLed(compteurAimants());
         isCentralAnimActive = false;
         cityLedOn = true;
         delay(500);
-	  } else if (inputBuffer == "RESET") {
+      } else if (inputBuffer == "RESET") {
         initLeds();
     		centralOffAnimation();
 		    centralRedAnimation();
