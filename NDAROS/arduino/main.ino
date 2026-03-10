@@ -35,6 +35,7 @@ float centralOffset = 0.0;
 bool isCentralAnimActive = false;
 bool cityLedOn = false;
 bool cityLedBlack = false;
+bool waitingForCentralButton = false;
 
 #define MAGNET_SENSOR_1 2
 #define MAGNET_SENSOR_2 3
@@ -78,6 +79,8 @@ void initLeds() {
   ocean_strip.fill(ocean_strip.Color(255, 0, 0));
   pipe_river_strip.fill(pipe_river_strip.Color(255, 0, 0));
   pipe_ocean_strip.fill(pipe_ocean_strip.Color(255, 0, 0));
+  central_led.fill(central_led.Color(255, 0, 0));
+  city_leds.fill(city_leds.Color(255, 0, 0));
   showAllStrips();
 }
 
@@ -304,14 +307,22 @@ void loop() {
   // Update non-blocking pipe animations
   updatePipeAnimations();
   
-  if (isCentralAnimActive) {
+  if (waitingForCentralButton) {
     centralYellowAnimation();
+    if (isPipeCentralButtonPressed()) {
+      waitingForCentralButton = false;
+      cityLedOn = true;
+      Serial.println("BUTTON_CENTRAL_PRESSED");
+      UpdateCityLed(compteurAimants());
+    }
   } else if (cityLedOn) {
     centrelWhiteAnimation();
   } else if (cityLedBlack) {
+    centralOffAnimation();
     cityLedOff();
   } else {
     centralRedAnimation();
+    cityLedOnRed();
   }
 
   while (Serial.available()) {
@@ -345,6 +356,8 @@ void loop() {
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanRiverLed();
 		    resetPipes();
+        cityLedBlack = true;
+        cityLedOn = false;
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
@@ -353,18 +366,14 @@ void loop() {
           Serial.println("BUTTON_OCEAN_PRESSED");
         }
       } else if (inputBuffer == "BUTTON_CENTRAL") {
-        isCentralAnimActive = true;
-        Serial.println("BUTTON_CENTRAL_PRESSED");
-        centrelWhiteAnimation();
-        UpdateCityLed(compteurAimants());
-        isCentralAnimActive = false;
-        cityLedOn = true;
-        delay(500);
+        waitingForCentralButton = true; 
+        cityLedBlack = false;
+        cityLedOn = false;
       } else if (inputBuffer == "RESET") {
         initLeds();
-    		centralOffAnimation();
-		    centralRedAnimation();
-        cityLedOnRed();
+        waitingForCentralButton = false;
+        cityLedOn = false;
+        cityLedBlack = false;
       }
       inputBuffer = "";
     } else if (c != '\r') {
