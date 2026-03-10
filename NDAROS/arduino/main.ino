@@ -33,6 +33,7 @@ const int nbIndicesFull = sizeof(city_full_led_indices) / sizeof(city_full_led_i
 
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
+bool cityLedOn = false;
 
 #define MAGNET_SENSOR_1 2
 #define MAGNET_SENSOR_2 3
@@ -304,7 +305,7 @@ void loop() {
   
   if (isCentralAnimActive) {
     centralYellowAnimation();
-  } else {
+  } else if (cityLedOn)
     centrelWhiteAnimation();
   }
 
@@ -355,6 +356,7 @@ void loop() {
         centrelWhiteAnimation();
         UpdateCityLed(compteurAimants());
         isCentralAnimActive = false;
+        cityLedOn = true;
         delay(500);
 	  } else if (inputBuffer == "RESET") {
         initLeds();
