@@ -34,6 +34,7 @@ const int nbIndicesFull = sizeof(city_full_led_indices) / sizeof(city_full_led_i
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
 bool cityLedOn = false;
+bool cityLedOff = false;
 
 #define MAGNET_SENSOR_1 2
 #define MAGNET_SENSOR_2 3
@@ -305,8 +306,10 @@ void loop() {
   
   if (isCentralAnimActive) {
     centralYellowAnimation();
-  } else if (cityLedOn)
+  } else if (cityLedOn) {
     centrelWhiteAnimation();
+  } else if (cityLedOff) {
+    cityLedOff();
   } else {
     centralRedAnimation();
   }
@@ -337,6 +340,7 @@ void loop() {
           Serial.println("PRESENCE");
           centralOffAnimation();
           cityLedOff();
+          cityLedOff = true;
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanRiverLed();
