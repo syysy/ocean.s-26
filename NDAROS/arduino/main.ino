@@ -94,13 +94,13 @@ void resetPipes() {
 
 void pipeRiver() {
   pipeRiverActive = true;
-  pipeRiverIndex = 0;
+  pipeRiverIndex = PIPE_RIVER_NUM_LEDS - 1;
   pipeRiverLastUpdate = millis();
 }
 
 void pipeOcean() {
   pipeOceanActive = true;
-  pipeOceanIndex = 0;
+  pipeOceanIndex = PIPE_OCEAN_NUM_LEDS - 1;
   pipeOceanLastUpdate = millis();
 }
 
