@@ -6,9 +6,9 @@
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 100
 #define PIPE_RIVER 11
-#define PIPE_RIVER_NUM_LEDS 50
+#define PIPE_RIVER_NUM_LEDS 15
 #define PIPE_OCEAN 10
-#define PIPE_OCEAN_NUM_LEDS 50
+#define PIPE_OCEAN_NUM_LEDS 15
 
 #define RIVER_BUTTON 8
 #define OCEAN_BUTTON 9
@@ -108,21 +108,21 @@ void updatePipeAnimations() {
   unsigned long now = millis();
   
   if (pipeRiverActive && (now - pipeRiverLastUpdate >= PIPE_DELAY)) {
-    if (pipeRiverIndex < PIPE_RIVER_NUM_LEDS) {
-      pipe_river_strip.setPixelColor(pipeRiverIndex, RIVER_COLOR);
-      pipe_river_strip.show();
-      pipeRiverIndex++;
-      pipeRiverLastUpdate = now;
-    } else {
-      pipeRiverActive = false;
+    if (pipeRiverIndex > 0) {
+	  pipe_river_strip.setPixelColor(pipeRiverIndex, RIVER_COLOR);
+	  pipe_river_strip.show();
+	  pipeRiverIndex--;
+	  pipeRiverLastUpdate = now;
+	} else {
+	  pipeRiverActive = false;
     }
   }
   
   if (pipeOceanActive && (now - pipeOceanLastUpdate >= PIPE_DELAY)) {
-    if (pipeOceanIndex < PIPE_OCEAN_NUM_LEDS) {
+    if (pipeOceanIndex > 0) {
       pipe_ocean_strip.setPixelColor(pipeOceanIndex, OCEAN_COLOR);
       pipe_ocean_strip.show();
-      pipeOceanIndex++;
+      pipeOceanIndex--;
       pipeOceanLastUpdate = now;
     } else {
       pipeOceanActive = false;
