@@ -2,70 +2,141 @@
     "slides": [
         {
             "type": "image",
-            "src": "emergency.gif",
+            "src": "slide1.png",
             "title": "",
             "fullscreen": true
         },
         {
             "type": "image",
-            "src": "ndaros.png",
+            "src": "slide2.png",
             "title": "",
             "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Bienvenue",
-            "content": "<h1>Appuyez sur les boutons</h1>"
+            "type": "image",
+            "src": "slide3.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Premier appui",
-            "content": "<h1> 1 / 2 </h1><p>Appuyez à nouveau pour continuer...</p>"
+            "type": "image",
+            "src": "slide4.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Second appui",
-            "content": "<h1> 2 / 2 </h1><p>Démarrage en cours...</p>"
+            "type": "image",
+            "src": "slide5.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Prêt à produire",
-            "content": "<h2>Prêt à produire?</h2><p>Appuyez sur le bouton central pour valider</p>"
+            "type": "image",
+            "src": "slide6.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Production en cours",
-            "content": "<h2>Production en cours</h2>"
+            "type": "image",
+            "src": "slide7.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Mangroves nécessaires",
-            "content": "<h2>Production limités</h2><p>Placez les mangroves pour améliorer la production</p>"
+            "type": "image",
+            "src": "slide8.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Placement mangroves 1/3",
-            "content": "<h2>Placez les mangroves</h2><p>1 / 3</p>"
+            "type": "image",
+            "src": "slide9.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Placement mangroves 2/3",
-            "content": "<h2>Placez les mangroves</h2><p>2 / 3</p>"
+            "type": "image",
+            "src": "slide10.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Placement mangroves 3/3",
-            "content": "<h2>Placez les mangroves</h2><p>3 / 3</p>"
+            "type": "image",
+            "src": "slide11.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Écosystème optimisée",
-            "content": "<h2>Écosystème optimisé</h2><p>Production maximale atteinte</p>"
+            "type": "image",
+            "src": "slide12.png",
+            "title": "",
+            "fullscreen": true
         },
         {
-            "type": "text",
-            "title": "Fin",
-            "content": "<h1>Merci!</h1><p>Écosystème complété avec succès</p>"
-        }
+            "type": "image",
+            "src": "slide13.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide14.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide15.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide16.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide17.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide18.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide19.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide20.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide21.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide22.png",
+            "title": "",
+            "fullscreen": true
+        },
+        {
+            "type": "image",
+            "src": "slide23.png",
+            "title": "",
+            "fullscreen": true
+        } 
     ]
 }

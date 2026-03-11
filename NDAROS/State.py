@@ -21,7 +21,7 @@ class AlertState(State):
 				break
 			time.sleep(0.1)
 		
-		self.context.displaySlide(1)
+		self.context.displaySlide(2)
 		self.context.send("OCEAN_RIVER\n")
 		self.context.changeState(PresentationState(self.context))
 		self.context.execute()
@@ -35,7 +35,7 @@ class PresentationState(State):
 		while time.time() - self.start_time < 10:
 			time.sleep(0.1)
 		
-		self.context.displaySlide(2)
+		self.context.displaySlide(3)
 
 		self.context.changeState(PipeState(self.context))
 		self.context.execute()
@@ -50,7 +50,10 @@ class PipeState(State):
 		btn_ocean_pressed = False
 		while not (btn_river_pressed and btn_ocean_pressed):
 			if (btn_river_pressed and not btn_ocean_pressed) or (btn_ocean_pressed and not btn_river_pressed):
-				self.context.displaySlide(3)  # Afficher la slide du milieu après le premier bouton
+				self.context.displaySlide(4)  # Afficher la slide du milieu après le premier bouton
+				time.sleep(2)  # Laisser le temps de lire la slide
+				self.context.displaySlide(5)  # Revenir à la slide précédente
+				time.sleep(2)  # Laisser le temps de lire la slide
 			self.context.send("PIPE_AVAILABLE\n")
 			if self.context.receive() == "BUTTON_RIVER_PRESSED":
 				btn_river_pressed = True
@@ -59,22 +62,29 @@ class PipeState(State):
 				btn_ocean_pressed = True
 				self.context.send("PIPE_RIVER\n")
     
-		self.context.displaySlide(4)  # Afficher la slide finale après les deux boutons
+		self.context.displaySlide(6)  # Afficher la slide finale après les deux boutons
+		time.sleep(2)  # Laisser le temps de lire la slide
+		self.context.displaySlide(7)  # Afficher la slide finale après les deux boutons
 		time.sleep(5)  # Laisser le temps de lire la slide
+		self.context.displaySlide(8)  # Afficher la slide finale après les deux boutons
+		time.sleep(10)
 		self.context.changeState(ReadyProductionState(self.context))
 		self.context.execute()
 
 class ReadyProductionState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(5)  # En attente du bouton central
+		self.context.displaySlide(9)  # En attente du bouton central
 
 	def execute(self):
 		self.context.send("BUTTON_CENTRAL\n")
 		while self.context.receive() != "BUTTON_CENTRAL_PRESSED":
 			time.sleep(0.1)
-
-		self.context.displaySlide(6)  # Production lancée
+		
+		self.context.displaySlide(10)  # Slide de transition avant production
+		time.sleep(2)  # Laisser le temps de lire la slide
+		self.context.displaySlide(11)  # Production lancée
+		time.sleep(5)  # Laisser le temps de lire la slide
 		
 		self.context.changeState(ProductionState(self.context))
 		self.context.execute()
@@ -82,22 +92,24 @@ class ReadyProductionState(State):
 class ProductionState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(6)  # Production
+		self.context.displaySlide(11)  # Production
 		self.start_time = time.time()
 
 	def execute(self):
 		while time.time() - self.start_time < 10:
 			time.sleep(0.1)
 			
-		self.context.displaySlide(7)  # Popup mangrove
-		
+		self.context.displaySlide(12)  # Popup mangrove
+		time.sleep(5)
+		self.context.displaySlide(13)  # Placement mangrove
+		time.sleep(5)
 		self.context.changeState(PopupMangroveState(self.context))
 		self.context.execute()
 
 class PopupMangroveState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(7)  # Placement mangrove
+		self.context.displaySlide(13)  # Placement mangrove
 
 	def execute(self):
 		while True:
@@ -108,7 +120,7 @@ class PopupMangroveState(State):
 					counter = int(line)
 					self.context.mangroveNumber = counter
 					if counter > 0:
-						self.context.displaySlide(8)  # Production mangrove
+						self.context.displaySlide(14)  # Production mangrove
 						self.context.changeState(ProductionMangroveState(self.context))
 						self.context.execute()
 						return
@@ -121,7 +133,7 @@ class ProductionMangroveState(State):
 		self.context = context
 		self.last_magnet_count = 0
 		self.max_reached_time = None
-		self.context.displaySlide(8)  # Affichage production mangrove (1/3)
+		self.context.displaySlide(14)  # Affichage production mangrove (1/3)
 
 	def execute(self):
 		while True:
@@ -163,7 +175,7 @@ class ProductionMangroveState(State):
 					
 					# Si 20 secondes ont passé avec 3 magnets
 					if time.time() - self.max_reached_time > 3:
-						self.context.displaySlide(13)  # Slide de fin
+						self.context.displaySlide(20)  # Slide de fin
 						self.context.changeState(ProductionCompleteState(self.context))
 						self.context.execute()
 						return
@@ -178,35 +190,47 @@ class ProductionMangroveState(State):
 		if count == 0:
 			pass  # Rien à afficher
 		elif count == 1:
-			self.context.displaySlide(8)   # 1/3
+
 			self.context.send("SEPARATION\n")
+			self.context.displaySlide(14)  # 1/3
+			time.sleep(2)  # Laisser le temps de lire la slide
+			self.context.displaySlide(15)  # Loading 2/3
+			time.sleep(2)  # Laisser le temps de lire la slide
+   
 		elif count == 2:
-			self.context.displaySlide(9)   # 2/3
 			self.context.send("SEPARATION\n")
+			self.context.displaySlide(16)  # Loading 3/3
+			time.sleep(2)  # Laisser le temps de lire la slide
+			self.context.displaySlide(17)  # 3/3
+			time.sleep(2)  # Laisser le temps de lire la slide
 		elif count >= 3:
-			self.context.displaySlide(10)  # 3/3
 			self.context.send("SEPARATION\n")
+			self.context.displaySlide(18)  # Slide de fin
+			time.sleep(2)  # Laisser le temps de lire la slide
+			self.context.displaySlide(19)  # Slide de fin
+			time.sleep(2)  # Laisser le temps de lire la slide
 
 class ProductionCompleteState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(11)  # Slide de fin
+		self.context.displaySlide(20)  # Slide de fin
 		self.start_time = time.time()
 
 	def execute(self):
 		while time.time() - self.start_time < 10:
-			self.context.displaySlide(12)  # Slide de fin
+			self.context.displaySlide(21)  # Slide de fin
+			time.sleep(10)
 			self.context.changeState(CleanState(self.context))
 			self.context.execute()
 
 class CleanState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(12)  # Remerciements
+		self.context.displaySlide(22)  # Remerciements
 		self.start_time = time.time()
 
 	def execute(self):
-		while time.time() - self.start_time < 5:
+		while time.time() - self.start_time < 15:
 			time.sleep(0.1)
 		
 		self.context.changeState(AlertState(self.context))
