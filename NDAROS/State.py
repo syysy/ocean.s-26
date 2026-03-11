@@ -48,19 +48,26 @@ class PipeState(State):
 	def execute(self):
 		btn_river_pressed = False
 		btn_ocean_pressed = False
+		slide_milieu_shown = False
+
 		while not (btn_river_pressed and btn_ocean_pressed):
-			if (btn_river_pressed and not btn_ocean_pressed) or (btn_ocean_pressed and not btn_river_pressed):
-				self.context.displaySlide(4)  # Afficher la slide du milieu après le premier bouton
-				time.sleep(2)  # Laisser le temps de lire la slide
-				self.context.displaySlide(5)  # Revenir à la slide précédente
-				time.sleep(2)  # Laisser le temps de lire la slide
 			self.context.send("PIPE_AVAILABLE\n")
-			if self.context.receive() == "BUTTON_RIVER_PRESSED":
+			msg = self.context.receive()
+			if msg == "BUTTON_RIVER_PRESSED" and not btn_river_pressed:
 				btn_river_pressed = True
 				self.context.send("PIPE_OCEAN\n")
-			elif self.context.receive() == "BUTTON_OCEAN_PRESSED":
+			elif msg == "BUTTON_OCEAN_PRESSED" and not btn_ocean_pressed:
 				btn_ocean_pressed = True
 				self.context.send("PIPE_RIVER\n")
+
+			# Afficher la slide du milieu une seule fois après le premier bouton
+			if (btn_river_pressed != btn_ocean_pressed) and not slide_milieu_shown:
+				self.context.displaySlide(4)
+				time.sleep(2)
+				self.context.displaySlide(5)
+				time.sleep(2)
+				self.context.displaySlide(3)
+				slide_milieu_shown = True
     
 		self.context.displaySlide(6)  # Afficher la slide finale après les deux boutons
 		time.sleep(2)  # Laisser le temps de lire la slide
@@ -176,6 +183,7 @@ class ProductionMangroveState(State):
 					# Si 20 secondes ont passé avec 3 magnets
 					if time.time() - self.max_reached_time > 3:
 						self.context.displaySlide(20)  # Slide de fin
+						time.sleep(10)  # Laisser le temps de lire la slide
 						self.context.changeState(ProductionCompleteState(self.context))
 						self.context.execute()
 						return
@@ -190,30 +198,18 @@ class ProductionMangroveState(State):
 		if count == 0:
 			pass  # Rien à afficher
 		elif count == 1:
-
 			self.context.send("SEPARATION\n")
-			self.context.displaySlide(14)  # 1/3
-			time.sleep(2)  # Laisser le temps de lire la slide
-			self.context.displaySlide(15)  # Loading 2/3
-			time.sleep(2)  # Laisser le temps de lire la slide
-   
+			self.context.displaySlide(14)  # 1/3   
 		elif count == 2:
 			self.context.send("SEPARATION\n")
 			self.context.displaySlide(16)  # Loading 3/3
-			time.sleep(2)  # Laisser le temps de lire la slide
-			self.context.displaySlide(17)  # 3/3
-			time.sleep(2)  # Laisser le temps de lire la slide
 		elif count >= 3:
 			self.context.send("SEPARATION\n")
 			self.context.displaySlide(18)  # Slide de fin
-			time.sleep(2)  # Laisser le temps de lire la slide
-			self.context.displaySlide(19)  # Slide de fin
-			time.sleep(2)  # Laisser le temps de lire la slide
 
 class ProductionCompleteState(State):
 	def __init__(self, context):
 		self.context = context
-		self.context.displaySlide(20)  # Slide de fin
 		self.start_time = time.time()
 
 	def execute(self):
