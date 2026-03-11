@@ -6,9 +6,9 @@
 #define OCEAN 12
 #define OCEAN_NUM_LEDS 100
 #define PIPE_RIVER 11
-#define PIPE_RIVER_NUM_LEDS 50
+#define PIPE_RIVER_NUM_LEDS 15
 #define PIPE_OCEAN 10
-#define PIPE_OCEAN_NUM_LEDS 50
+#define PIPE_OCEAN_NUM_LEDS 15
 
 #define RIVER_BUTTON 8
 #define OCEAN_BUTTON 9
@@ -33,6 +33,9 @@ const int nbIndicesFull = sizeof(city_full_led_indices) / sizeof(city_full_led_i
 
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
+bool cityLedOn = false;
+bool cityLedBlack = false;
+bool waitingForCentralButton = false;
 
 #define MAGNET_SENSOR_1 2
 #define MAGNET_SENSOR_2 3
@@ -76,6 +79,8 @@ void initLeds() {
   ocean_strip.fill(ocean_strip.Color(255, 0, 0));
   pipe_river_strip.fill(pipe_river_strip.Color(255, 0, 0));
   pipe_ocean_strip.fill(pipe_ocean_strip.Color(255, 0, 0));
+  central_led.fill(central_led.Color(255, 0, 0));
+  city_leds.fill(city_leds.Color(255, 0, 0));
   showAllStrips();
 }
 
@@ -89,13 +94,13 @@ void resetPipes() {
 
 void pipeRiver() {
   pipeRiverActive = true;
-  pipeRiverIndex = 0;
+  pipeRiverIndex = PIPE_RIVER_NUM_LEDS - 1;
   pipeRiverLastUpdate = millis();
 }
 
 void pipeOcean() {
   pipeOceanActive = true;
-  pipeOceanIndex = 0;
+  pipeOceanIndex = PIPE_OCEAN_NUM_LEDS - 1;
   pipeOceanLastUpdate = millis();
 }
 
@@ -103,21 +108,21 @@ void updatePipeAnimations() {
   unsigned long now = millis();
   
   if (pipeRiverActive && (now - pipeRiverLastUpdate >= PIPE_DELAY)) {
-    if (pipeRiverIndex < PIPE_RIVER_NUM_LEDS) {
-      pipe_river_strip.setPixelColor(pipeRiverIndex, RIVER_COLOR);
-      pipe_river_strip.show();
-      pipeRiverIndex++;
-      pipeRiverLastUpdate = now;
-    } else {
-      pipeRiverActive = false;
+    if (pipeRiverIndex > 0) {
+	  pipe_river_strip.setPixelColor(pipeRiverIndex, RIVER_COLOR);
+	  pipe_river_strip.show();
+	  pipeRiverIndex--;
+	  pipeRiverLastUpdate = now;
+	} else {
+	  pipeRiverActive = false;
     }
   }
   
   if (pipeOceanActive && (now - pipeOceanLastUpdate >= PIPE_DELAY)) {
-    if (pipeOceanIndex < PIPE_OCEAN_NUM_LEDS) {
+    if (pipeOceanIndex > 0) {
       pipe_ocean_strip.setPixelColor(pipeOceanIndex, OCEAN_COLOR);
       pipe_ocean_strip.show();
-      pipeOceanIndex++;
+      pipeOceanIndex--;
       pipeOceanLastUpdate = now;
     } else {
       pipeOceanActive = false;
@@ -302,10 +307,22 @@ void loop() {
   // Update non-blocking pipe animations
   updatePipeAnimations();
   
-  if (isCentralAnimActive) {
+  if (waitingForCentralButton) {
     centralYellowAnimation();
-  } else {
+    if (isPipeCentralButtonPressed()) {
+      waitingForCentralButton = false;
+      cityLedOn = true;
+      Serial.println("BUTTON_CENTRAL_PRESSED");
+      UpdateCityLed(compteurAimants());
+    }
+  } else if (cityLedOn) {
     centrelWhiteAnimation();
+  } else if (cityLedBlack) {
+    centralOffAnimation();
+    cityLedOff();
+  } else {
+    centralRedAnimation();
+    cityLedOnRed();
   }
 
   while (Serial.available()) {
@@ -334,10 +351,13 @@ void loop() {
           Serial.println("PRESENCE");
           centralOffAnimation();
           cityLedOff();
+          cityLedBlack = true;
         }
       } else if (inputBuffer == "OCEAN_RIVER") {
         oceanRiverLed();
 		    resetPipes();
+        cityLedBlack = true;
+        cityLedOn = false;
       } else if (inputBuffer == "PIPE_AVAILABLE") {
         if (isPipeRiverButtonPressed()) {
           Serial.println("BUTTON_RIVER_PRESSED");
@@ -346,21 +366,14 @@ void loop() {
           Serial.println("BUTTON_OCEAN_PRESSED");
         }
       } else if (inputBuffer == "BUTTON_CENTRAL") {
-        isCentralAnimActive = true;
-        while (!isPipeCentralButtonPressed()) {
-            delay(50);
-            centralYellowAnimation();
-        }
-        Serial.println("BUTTON_CENTRAL_PRESSED");
-        centrelWhiteAnimation();
-        UpdateCityLed(compteurAimants());
-        isCentralAnimActive = false;
-        delay(500);
-	  } else if (inputBuffer == "RESET") {
+        waitingForCentralButton = true; 
+        cityLedBlack = false;
+        cityLedOn = false;
+      } else if (inputBuffer == "RESET") {
         initLeds();
-    		centralOffAnimation();
-		    centralRedAnimation();
-        cityLedOnRed();
+        waitingForCentralButton = false;
+        cityLedOn = false;
+        cityLedBlack = false;
       }
       inputBuffer = "";
     } else if (c != '\r') {
