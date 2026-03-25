@@ -28,9 +28,10 @@ Adafruit_NeoPixel pipe_ocean_strip = Adafruit_NeoPixel(PIPE_OCEAN_NUM_LEDS, PIPE
 Adafruit_NeoPixel central_led = Adafruit_NeoPixel(CENTRAL_NUM_LEDS, CENTRAL_LEDS, NEO_GRB + NEO_KHZ800);
 
 Adafruit_NeoPixel city_leds(CITY_NUM_LEDS, CITY_LED, NEO_GRB + NEO_KHZ800);
-const int city_full_led_indices[] = {0, 3, 7, 10, 18, 25, 29, 31, 38, 50, 55, 60, 65, 70};
+const int city_full_led_indices[] = {30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+									  50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
+									  65, 66, 67, 68};
 const int nbIndicesFull = sizeof(city_full_led_indices) / sizeof(city_full_led_indices[0]);
-
 float centralOffset = 0.0; 
 bool isCentralAnimActive = false;
 bool cityLedOn = false;
@@ -242,6 +243,7 @@ void UpdateCityLed(int aimants) {
     int cleanAimants = constrain(aimants, 1, 3);
     int intensity = 0;
 
+	// mettre le meme jaune que la centrale 
     if (cleanAimants == 1) intensity = 30; 
     if (cleanAimants == 2) intensity = 110;
     if (cleanAimants == 3) intensity = 255;
@@ -249,17 +251,17 @@ void UpdateCityLed(int aimants) {
     for (int i = 0; i < nbIndicesFull; i++) {
       int ledIndex = city_full_led_indices[i];
       if (ledIndex < CITY_NUM_LEDS) {
-        city_leds.setPixelColor(ledIndex, city_leds.Color(intensity, intensity, intensity));
-      }
+		city_leds.setPixelColor(ledIndex, city_leds.Color(intensity, intensity, 0));
+	}
     }
-  } 
+  }
   else {
     // Cas 0 aimants : Faible intensité, une sur deux
     int lowIntensity = 8; 
     for (int i = 0; i < nbIndicesFull; i += 2) { 
       int ledIndex = city_full_led_indices[i];
       if (ledIndex < CITY_NUM_LEDS) {
-        city_leds.setPixelColor(ledIndex, city_leds.Color(lowIntensity, lowIntensity, lowIntensity));
+        city_leds.setPixelColor(ledIndex, city_leds.Color(lowIntensity, lowIntensity, 0));
       }
     }
   }
