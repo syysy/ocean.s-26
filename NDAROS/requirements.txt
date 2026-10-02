@@ -1,0 +1,7 @@
+pyserial
+python-vlc
+flask
+flask-cors
+requests
+pdf2image
+pillow

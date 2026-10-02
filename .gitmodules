@@ -1,0 +1,4 @@
+[submodule "Centrotus"]
+	path = Centrotus
+	url = git@github.com:zoegoujon/Centrotus.git
+	branch = master
